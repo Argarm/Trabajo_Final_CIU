@@ -7,13 +7,15 @@ import org.jbox2d.dynamics.*;
 ArrayList<Box> boxes;
 ArrayList boundaries;
 Box2DProcessing box2d;        
-
+Box d,a;
 void setup() {
   size(1000,1000);
   smooth();
   // Initialize and create the Box2D world
   box2d = new Box2DProcessing(this);    
   box2d.createWorld();
+  d = new Box(width/2,height/2,25,310,BodyType.STATIC);
+  a = new Box(width/2,2*height/3,400,30,BodyType.STATIC);
   
   // Create ArrayLists
   boxes = new ArrayList<Box>();
@@ -30,17 +32,12 @@ void draw() {
   
   // We must always step through time!
   box2d.step();    
-
-  // When the mouse is clicked, add a new Box object
-  /*Box d = new Box(width/2,height/2,25,310,0);
-  Box a = new Box(width/2,2*height/3,400,30,0);
   d.display();
   a.display();
-  */
+  // When the mouse is clicked, add a new Box object
   if (mousePressed) {
     
-    Box p = new Box(mouseX,mouseY,16,16,1);
-    if(boxes.size()>25)boxes.remove(0);
+    Box p = new Box(mouseX,mouseY,16,16,BodyType.DYNAMIC);
     boxes.add(p);
   }
   

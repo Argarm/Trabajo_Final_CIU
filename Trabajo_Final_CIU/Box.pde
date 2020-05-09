@@ -5,15 +5,13 @@ class Box {
 
   float w,h;
 
-  Box(float x, float y,float ancho,float alto, int b) {
+  Box(float x, float y,float ancho,float alto, BodyType b) {
     w = ancho;
     h = alto;
 
     // Build Body
     BodyDef bd = new BodyDef();
-    //if(b == 1)bd.type = BodyType.DYNAMIC;
-    //else bd.type = BodyType.STATIC;
-    bd.type = BodyType.DYNAMIC;
+    bd.type = b;
     bd.position.set(box2d.coordPixelsToWorld(x,y));
     body = box2d.createBody(bd);
 
