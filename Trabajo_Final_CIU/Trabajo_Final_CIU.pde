@@ -22,7 +22,7 @@ Boolean pressed = false;
 int freeId;
 int[] towerLastId;
 boolean staticAccess,dynamicAccess;
-int numberOfPieces = 6;
+int numberOfPieces = 3;
 void setup() {
   staticMaker = new ArrayList<Integer>();
   dynamicMaker = new ArrayList<Integer>();
@@ -51,11 +51,11 @@ void setup() {
 
   freeId = -1;
   towerLastId = new int[3];
-  towerLastId[0]=5; 
+  towerLastId[0]=numberOfPieces -1; 
   towerLastId[1]=-1; 
   towerLastId[2]=-1;
   
-  for (int i = 0; i < 5; i++){
+  for (int i = 0; i < numberOfPieces; i++){
     staticMaker.add(i);
   }
 }
@@ -158,12 +158,12 @@ void beginContact(Contact con) {
     o2.getClass() == Piece.class){
       Piece p1 = (Piece)o1;
       Piece p2 = (Piece)o2;
-      if (p1.getBody().getPosition().y > p2.getBody().getPosition().y  && freeId == p1.getId() && -1 != contains(towerLastId,p2.getId()) ) {
+      if (p1.getBody().getPosition().y > p2.getBody().getPosition().y  && freeId == p1.getId() && -1 != contains(towerLastId,p2.getId()) && p1.getId() > p2.getId() ) {
         int tower = contains(towerLastId,p2.getId());
         towerLastId[tower] = p1.getId();
         freeId = -1;
         makeArrayDynamic(towerLastId);
-      }else if(freeId == p2.getId() && -1 != contains(towerLastId,p1.getId())){
+      }else if(freeId == p2.getId() && -1 != contains(towerLastId,p1.getId()) && p2.getId() > p1.getId() ){
         int tower = contains(towerLastId,p1.getId());
         towerLastId[tower] = p2.getId();
         freeId = -1;
@@ -305,7 +305,7 @@ void pieceToPieceReleaser(Object o1, Object o2) {
   Piece p1 = (Piece)o1;
   Piece p2 = (Piece)o2;
 
-  if (p1.getBody().getPosition().y > p2.getBody().getPosition().y && p1.getBodyType() != BodyType.DYNAMIC) {
+  if (p1.getBody().getPosition().y > p2.getBody().getPosition().y && p1.getBodyType() != BodyType.DYNAMIC ) {
     //System.out.println(p1.getId() + " > " + p2.getId());
     //p2.makeStatic();
     
