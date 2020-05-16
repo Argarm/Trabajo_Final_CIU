@@ -4,11 +4,11 @@ class Box {
   Body body;      
 
   float w,h;
-
-  Box(float x, float y,float ancho,float alto, BodyType b) {
+  int id;
+  Box(float x, float y,float ancho,float alto, BodyType b, int newId) {
     w = ancho;
     h = alto;
-
+    id = newId;
     // Build Body
     BodyDef bd = new BodyDef();
     bd.type = b;
@@ -34,7 +34,9 @@ class Box {
     // Attach Fixture to Body						   
     body.createFixture(fd);
   }
-
+  int getId(){
+    return id;
+  }
   void display() {
     // We need the Body’s location and angle
     Vec2 pos = box2d.getBodyPixelCoord(body);		

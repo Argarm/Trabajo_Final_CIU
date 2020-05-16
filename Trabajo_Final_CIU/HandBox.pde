@@ -61,7 +61,7 @@ class HandBox {
   }
   void teleport(Vec2 nPos){
     body.setTransform(nPos,body.getAngle());
-    System.out.println(body.getPosition());
+    //System.out.println(body.getPosition());
   }
 
 }
