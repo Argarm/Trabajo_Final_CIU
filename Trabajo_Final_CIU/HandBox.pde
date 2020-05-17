@@ -10,9 +10,8 @@ class HandBox {
     h = alto;
 
     // Build Body
-    BodyDef bd = new BodyDef();
-    bd.type = b;
-    bd.position.set(box2d.coordPixelsToWorld(x,y));
+    BodyDef bd = ShapeUtils.createBodyDefinition(x,y,b);
+    
     body = box2d.createBody(bd);
   body.setUserData(this);
 

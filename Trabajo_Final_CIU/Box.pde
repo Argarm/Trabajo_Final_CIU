@@ -10,6 +10,7 @@ class Box {
     w = ancho;
     h = alto;
     id = newId;
+    
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w, h);
     FixtureDef fixture  = fixtureDefinition(polygonShape);
 
