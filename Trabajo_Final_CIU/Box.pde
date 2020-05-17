@@ -49,9 +49,11 @@ class Box {
     rect(0,0,w,h);
     popMatrix();
   }
+  
   void killBody() {
     box2d.destroyBody(body);
   }
+  
   void teleport(Vec2 nPos){
     body.setTransform(nPos,body.getAngle());
     System.out.println(body.getPosition());
