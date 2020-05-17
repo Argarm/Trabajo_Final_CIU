@@ -10,4 +10,13 @@ static class ShapeUtils {
         return bodyDefinition;
     }
 
+    private static Body createBody(BodyDef bodyDefinition, PolygonShape polygonShape, Object self){
+        Body body = box2d.createBody(bodyDefinition);
+        body.createFixture(polygonShape, 1);
+        
+        body.setUserData(self);
+
+        return body;
+    }
+
 }

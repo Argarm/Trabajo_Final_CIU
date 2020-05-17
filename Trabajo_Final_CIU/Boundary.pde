@@ -12,15 +12,9 @@ class Boundary {
     PolygonShape polygonShape = definePolygonAsBox();
 
     BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x,y,angle);
-    createBody(bodyDefinition, polygonShape);
+    body = ShapeUtils.createBody(bodyDefinition, polygonShape, this);
   }
 
-  private void createBody(BodyDef bodyDefinition, PolygonShape polygonShape){
-    body = box2d.createBody(bodyDefinition);
-    body.createFixture(polygonShape, 1);
-    
-    body.setUserData(this);
-  }
 
   private PolygonShape definePolygonAsBox(){
     PolygonShape polygonShape = new PolygonShape();
