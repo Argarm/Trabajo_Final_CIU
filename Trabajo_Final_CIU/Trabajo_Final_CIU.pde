@@ -22,7 +22,7 @@ Boolean pressed = false;
 int freeId;
 int[] towerLastId;
 boolean staticAccess,dynamicAccess;
-int numberOfPieces = 3;
+int numberOfPieces = 6;
 void setup() {
   staticMaker = new ArrayList<Integer>();
   dynamicMaker = new ArrayList<Integer>();
@@ -51,16 +51,16 @@ void setup() {
 
   freeId = -1;
   towerLastId = new int[3];
-  towerLastId[0]=numberOfPieces -1; 
+  towerLastId[0]= numberOfPieces -1; 
   towerLastId[1]=-1; 
   towerLastId[2]=-1;
   
-  for (int i = 0; i < numberOfPieces; i++){
+  for (int i = 0; i < numberOfPieces - 1; i++){
     staticMaker.add(i);
   }
 }
 void draw() {
-  println(towerLastId);
+  
   theDynamicMaker();
   theStaticMaker();
   //if(freeId != -1 && pieceCollection.get(freeId).getBodyType() == BodyType.STATIC);
@@ -125,6 +125,8 @@ void mouseReleased() {
   pressed = false;
   spring.destroy();
   handBox.killBody();
+  println(freeId);
+  println(freeId);
 }
 void mousePressed() {
   /*if (!pressed){
@@ -159,11 +161,13 @@ void beginContact(Contact con) {
       Piece p1 = (Piece)o1;
       Piece p2 = (Piece)o2;
       if (p1.getBody().getPosition().y > p2.getBody().getPosition().y  && freeId == p1.getId() && -1 != contains(towerLastId,p2.getId()) && p1.getId() > p2.getId() ) {
+        println(p1.getId() + " toca a " + p2.getId() );
         int tower = contains(towerLastId,p2.getId());
         towerLastId[tower] = p1.getId();
         freeId = -1;
         makeArrayDynamic(towerLastId);
       }else if(freeId == p2.getId() && -1 != contains(towerLastId,p1.getId()) && p2.getId() > p1.getId() ){
+        println(p2.getId() + " toca a " + p1.getId() );
         int tower = contains(towerLastId,p1.getId());
         towerLastId[tower] = p2.getId();
         freeId = -1;
@@ -182,6 +186,7 @@ void beginContact(Contact con) {
       p = (Piece)o1;
     }
     if(freeId == p.getId() && towerLastId[b.getId()] == -1 ){
+      println(p.getId() + " toca un bloque " );
       towerLastId[b.getId()]= p.getId();
       freeId = -1;
       makeArrayDynamic(towerLastId);
@@ -210,8 +215,8 @@ void endContact(Contact con) {
     Piece p1 = (Piece)o1;
     Piece p2 = (Piece)o2;
     int tower = contains(towerLastId,p1.getId());
-    if (tower != -1 && freeId == -1){//p2.getId() != freeId && p1.getBodyType() != BodyType.STATIC){
-      //print("p1 es " + p1.getId() + " Sale");
+    if (tower != -1 && freeId == -1 && p1.getBodyType() != BodyType.STATIC){//p2.getId() != freeId && p1.getBodyType() != BodyType.STATIC){
+      println( p1.getId() + " se separa de " + p2.getId());
       int id = p1.getId() ;
       freeId = id;
       towerLastId[tower] = p2.getId();
@@ -219,8 +224,8 @@ void endContact(Contact con) {
       return;
     }
     tower = contains(towerLastId,p2.getId());
-    if(tower != -1 && freeId == -1){//p1.getId() != freeId ){
-      //print("p2 es " + p2.getId() + " Sale");
+    if(tower != -1 && freeId == -1 && p2.getBodyType() != BodyType.STATIC){//p1.getId() != freeId ){
+      println( p2.getId() + " se separa de " + p1.getId());
       int id = p2.getId() ;
       freeId = id;
       towerLastId[tower] = p1.getId();
@@ -240,11 +245,13 @@ void endContact(Contact con) {
       p = (Piece)o1;
     }
     
-    if(-1 != contains(towerLastId,p.getId())&& freeId == -1){
+    if(-1 != contains(towerLastId,p.getId()) && freeId == -1 && p.getBodyType() != BodyType.STATIC){
+        println( p.getId() + " se separa de un bloque" );
         int id = p.getId() ;
         freeId = id;
         towerLastId[b.getId()] = -1;
         allStaticExcept(new int[] {id});
+        
     }
   }
 }

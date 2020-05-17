@@ -42,7 +42,7 @@ class Piece {
         body.setType(BodyType.STATIC);  
         body.setAwake(true);
       }catch (AssertionError e){
-        //System.out.println(e);
+        System.out.println(e);
       }
     }
   }
@@ -53,7 +53,7 @@ class Piece {
         body.setType(BodyType.DYNAMIC);  
         body.setAwake(true);
       }catch (AssertionError e){
-        //System.out.println(e);
+        System.out.println(e);
       }
     }
   }
