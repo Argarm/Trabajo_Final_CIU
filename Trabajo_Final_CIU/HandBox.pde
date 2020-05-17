@@ -21,15 +21,11 @@ class HandBox {
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w,h);
     
     // Define a fixture
-    FixtureDef fd = new FixtureDef();
-    fd.shape = polygonShape;
-    // Parameters that affect physics
-    fd.density = 1;
-    fd.friction = 0.3;
-    fd.restitution = 0.5;
+    
+    FixtureDef fixture = ShapeUtils.defineFixture(polygonShape);
 
     // Attach Fixture to Body               
-    body.createFixture(fd);
+    body.createFixture(fixture);
   }
 
   void display() {

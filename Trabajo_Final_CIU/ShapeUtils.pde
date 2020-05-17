@@ -46,5 +46,16 @@ static class ShapeUtils {
         polygonShape.setAsBox(box2dW, box2dH);
         return polygonShape;
   }
+  
+  private static FixtureDef defineFixture(PolygonShape polygonShape){
+    FixtureDef fixture = new FixtureDef();
+    
+    fixture.shape = polygonShape;
+    fixture.density = 1;
+    fixture.friction = 0.3;
+    fixture.restitution = 0.5;
+    
+    return fixture;
+  }
 
 }
