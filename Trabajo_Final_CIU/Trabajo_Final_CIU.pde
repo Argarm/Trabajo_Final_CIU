@@ -5,13 +5,15 @@ import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.*;
+
 // A list for all of our rectangles
 ArrayList<Box> boxes;
 ArrayList boundaries;
 ArrayList<Piece> pieceCollection; 
 ArrayList<Integer> staticMaker,staticCola;
 ArrayList<Integer> dynamicMaker,dynamicCola;
-Box2DProcessing box2d;        
+Box2DProcessing box2d;
+
 //Box d,a;
 Box apile1, apile2, apile3;
 //Box piece1, piece2, piece3, piece4, piece5;

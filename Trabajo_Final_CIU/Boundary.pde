@@ -1,6 +1,6 @@
 class Boundary {
   float x, y, w, h;
-  Body b;
+  Body body;
 
  Boundary(float x,float y, float w, float h, float angle) {
     this.x = x;
@@ -26,10 +26,10 @@ class Boundary {
   }
 
   private void createBody(BodyDef bodyDefinition, PolygonShape polygonShape){
-    b = box2d.createBody(bodyDefinition);
-    b.createFixture(polygonShape, 1);
+    body = box2d.createBody(bodyDefinition);
+    body.createFixture(polygonShape, 1);
     
-    b.setUserData(this);
+    body.setUserData(this);
   }
 
   private PolygonShape definePolygonAsBox(){
@@ -40,20 +40,23 @@ class Boundary {
     polygonShape.setAsBox(box2dW, box2dH);
     return polygonShape;
   }
-  // Draw the boundary, if it were at an angle we'd have to do something fancier
+  
   void display() {
-    noFill();
-    stroke(0);
-    strokeWeight(1);
-    rectMode(CENTER);
 
-    float a = b.getAngle();
+    setConfiguration();
+    float angle = body.getAngle();
 
     pushMatrix();
     translate(x,y);
-    rotate(-a);
+    rotate(-angle);
     rect(0,0,w,h);
     popMatrix();
   }
 
+  private void setConfiguration(){
+    noFill();
+    stroke(0);
+    strokeWeight(1);
+    rectMode(CENTER);
+  }
 }
