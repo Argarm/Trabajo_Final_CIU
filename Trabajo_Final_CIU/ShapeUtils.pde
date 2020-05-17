@@ -19,4 +19,13 @@ static class ShapeUtils {
         return body;
     }
 
+    private static PolygonShape definePolygonAsBox(float width, float height){
+        PolygonShape polygonShape = new PolygonShape();
+
+        float box2dW = box2d.scalarPixelsToWorld(width/2);
+        float box2dH = box2d.scalarPixelsToWorld(height/2);
+        polygonShape.setAsBox(box2dW, box2dH);
+        return polygonShape;
+  }
+
 }

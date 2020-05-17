@@ -9,20 +9,10 @@ class Boundary {
     this.h = h;
 
     
-    PolygonShape polygonShape = definePolygonAsBox();
+    PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w, h);
 
     BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x,y,angle);
     body = ShapeUtils.createBody(bodyDefinition, polygonShape, this);
-  }
-
-
-  private PolygonShape definePolygonAsBox(){
-    PolygonShape polygonShape = new PolygonShape();
-
-    float box2dW = box2d.scalarPixelsToWorld(w/2);
-    float box2dH = box2d.scalarPixelsToWorld(h/2);
-    polygonShape.setAsBox(box2dW, box2dH);
-    return polygonShape;
   }
   
   void display() {
