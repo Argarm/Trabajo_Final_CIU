@@ -2,7 +2,7 @@ class Boundary {
   float x, y, w, h;
   Body b;
 
- Boundary(float x,float y, float w, float h, float a) {
+ Boundary(float x,float y, float w, float h, float angle) {
     this.x = x;
     this.y = y;
     this.w = w;
@@ -11,15 +11,15 @@ class Boundary {
     
     PolygonShape polygonShape = definePolygonAsBox();
 
-    BodyDef bodyDefinition = createBodyDefinition();
+    BodyDef bodyDefinition = createBodyDefinition(angle);
     createBody(bodyDefinition, polygonShape);
   }
   
-  private BodyDef bodyDefinition(){
+  private BodyDef createBodyDefinition(float angle){
     BodyDef bodyDefinition = new BodyDef();
 
     bodyDefinition.type = BodyType.STATIC;
-    bodyDefinition.angle = a;
+    bodyDefinition.angle = angle;
     bodyDefinition.position.set(box2d.coordPixelsToWorld(x,y));
     
     return bodyDefinition;
@@ -32,7 +32,7 @@ class Boundary {
     b.setUserData(this);
   }
 
-  private PolygonShape definePolygonAsBox(float w,float h){
+  private PolygonShape definePolygonAsBox(){
     PolygonShape polygonShape = new PolygonShape();
 
     float box2dW = box2d.scalarPixelsToWorld(w/2);
