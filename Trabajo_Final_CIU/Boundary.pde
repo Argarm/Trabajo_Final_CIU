@@ -1,48 +1,45 @@
-// The Nature of Code
-// <http://www.shiffman.net/teaching/nature>
-// Spring 2010
-// Box2DProcessing example
-
-// A fixed boundary class (now incorporates angle)
-
 class Boundary {
-
-  // A boundary is a simple rectangle with x,y,width,and height
-  float x;
-  float y;
-  float w;
-  float h;
-  // But we also have to make a body for box2d to know about it
+  float x, y, w, h;
   Body b;
 
- Boundary(float x_,float y_, float w_, float h_, float a) {
-    x = x_;
-    y = y_;
-    w = w_;
-    h = h_;
+ Boundary(float x,float y, float w, float h, float a) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
 
-    // Define the polygon
-    PolygonShape sd = new PolygonShape();
-    // Figure out the box2d coordinates
-    float box2dW = box2d.scalarPixelsToWorld(w/2);
-    float box2dH = box2d.scalarPixelsToWorld(h/2);
-    // We're just a box
-    sd.setAsBox(box2dW, box2dH);
-
-
-    // Create the body
-    BodyDef bd = new BodyDef();
-    bd.type = BodyType.STATIC;
-    bd.angle = a;
-    bd.position.set(box2d.coordPixelsToWorld(x,y));
-    b = box2d.createBody(bd);
     
-    // Attached the shape to the body using a Fixture
-    b.createFixture(sd,1);
+    PolygonShape polygonShape = definePolygonAsBox();
+
+    BodyDef bodyDefinition = createBodyDefinition();
+    createBody(bodyDefinition, polygonShape);
+  }
+  
+  private BodyDef bodyDefinition(){
+    BodyDef bodyDefinition = new BodyDef();
+
+    bodyDefinition.type = BodyType.STATIC;
+    bodyDefinition.angle = a;
+    bodyDefinition.position.set(box2d.coordPixelsToWorld(x,y));
+    
+    return bodyDefinition;
+  }
+
+  private void createBody(BodyDef bodyDefinition, PolygonShape polygonShape){
+    b = box2d.createBody(bodyDefinition);
+    b.createFixture(polygonShape, 1);
     
     b.setUserData(this);
   }
 
+  private PolygonShape definePolygonAsBox(float w,float h){
+    PolygonShape polygonShape = new PolygonShape();
+
+    float box2dW = box2d.scalarPixelsToWorld(w/2);
+    float box2dH = box2d.scalarPixelsToWorld(h/2);
+    polygonShape.setAsBox(box2dW, box2dH);
+    return polygonShape;
+  }
   // Draw the boundary, if it were at an angle we'd have to do something fancier
   void display() {
     noFill();
