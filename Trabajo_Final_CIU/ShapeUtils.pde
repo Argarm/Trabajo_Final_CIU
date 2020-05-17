@@ -1,5 +1,14 @@
 static class ShapeUtils {
     
+    public static BodyDef createBodyDefinition (float x, float y, BodyType bodyType) {
+        BodyDef bodyDefinition = new BodyDef();
+
+        bodyDefinition.type = bodyType;
+        bodyDefinition.position.set(box2d.coordPixelsToWorld(x,y));
+        
+        return bodyDefinition;
+    }
+
     public static BodyDef createBodyDefinition (float x, float y, float angle) {
         BodyDef bodyDefinition = new BodyDef();
 
