@@ -19,6 +19,16 @@ static class ShapeUtils {
         return body;
     }
 
+    private static Body createBody(BodyDef bodyDefinition, PolygonShape polygonShape,FixtureDef fixture ,Object self){
+        Body body = box2d.createBody(bodyDefinition);
+        body.createFixture(fixture);
+        
+        body.setUserData(self);
+
+        return body;
+    }
+
+
     private static PolygonShape definePolygonAsBox(float width, float height){
         PolygonShape polygonShape = new PolygonShape();
 

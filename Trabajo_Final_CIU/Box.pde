@@ -5,6 +5,7 @@ class Box {
 
   float w,h;
   int id;
+
   Box(float x, float y,float ancho,float alto, BodyType b, int newId) {
     w = ancho;
     h = alto;
@@ -17,23 +18,29 @@ class Box {
     body.setUserData(this);
 
    // Define a polygon (this is what we use for a rectangle)
-    PolygonShape sd = new PolygonShape();
-    float box2dW = box2d.scalarPixelsToWorld(w/2);
-    float box2dH = box2d.scalarPixelsToWorld(h/2);	// Box2D considers the width and height of a
-    sd.setAsBox(box2dW, box2dH);		        // rectangle to be the distance from the
-                 					// center to the edge (so half of what we
-                					// normally think of as width or height.) 
+    PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w, h);
+    
     // Define a fixture
-    FixtureDef fd = new FixtureDef();
-    fd.shape = sd;
-    // Parameters that affect physics
-    fd.density = 1;
-    fd.friction = 0.3;
-    fd.restitution = 0.5;
+    FixtureDef fd  = fixtureDefinition(polygonShape);
+    
 
     // Attach Fixture to Body						   
     body.createFixture(fd);
   }
+
+  private FixtureDef fixtureDefinition(PolygonShape polygonShape){
+    FixtureDef fixture = new FixtureDef();
+    fixture.shape = polygonShape;
+    
+    fixture.density = 1;
+    fixture.friction = 0.3;
+    fixture.restitution = 0.5;
+
+    return fixture;
+  }
+
+
+
   int getId(){
     return id;
   }
