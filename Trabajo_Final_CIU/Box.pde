@@ -10,21 +10,13 @@ class Box {
     w = ancho;
     h = alto;
     id = newId;
-    // Build Body
-    BodyDef bd = ShapeUtils.createBodyDefinition(x, y, b);
-
-    body = box2d.createBody(bd);
-    body.setUserData(this);
-
-   // Define a polygon (this is what we use for a rectangle)
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w, h);
-    
-    // Define a fixture
-    FixtureDef fd  = fixtureDefinition(polygonShape);
-    
+    FixtureDef fixture  = fixtureDefinition(polygonShape);
 
-    // Attach Fixture to Body						   
-    body.createFixture(fd);
+    BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x, y, b);
+
+    body = ShapeUtils.createBody(bodyDefinition, fixture, this);
+
   }
 
   private FixtureDef fixtureDefinition(PolygonShape polygonShape){
