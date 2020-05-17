@@ -12,7 +12,7 @@ ArrayList boundaries;
 ArrayList<Piece> pieceCollection; 
 ArrayList<Integer> staticMaker,staticCola;
 ArrayList<Integer> dynamicMaker,dynamicCola;
-Box2DProcessing box2d;
+static Box2DProcessing box2d;
 
 //Box d,a;
 Box apile1, apile2, apile3;
