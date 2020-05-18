@@ -54,18 +54,20 @@ void draw() {
   displayBases();
   
   if (mousePressed) {
-    //handBox.updatePosition(mouseX,mouseY);
     handBox.display();
   }
-  for (Piece p : pieceCollection) {
-    p.display();
-  }
+  displayPieces();
 
   line(width/3, 0, width/3, 1000);
   line(width/3 * 2, 0, width/3*2, 1000);
   
 }
 
+void displayPieces(){
+  for (Piece p : pieceCollection) {
+    p.display();
+  }
+}
 
 void createPieces(int nPieces) {
   pieceCollection = new ArrayList<Piece>();
