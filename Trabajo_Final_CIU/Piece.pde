@@ -12,17 +12,16 @@ class Piece {
     this.tone = tone;
     id = newId;
     
-    BodyDef bd = ShapeUtils.createBodyDefinition(x,y,bodyType);
-    
-    body = box2d.createBody(bd);
-    body.setUserData(this);
-
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w,h);
     
+    BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x,y,bodyType);
+
     FixtureDef fixture = ShapeUtils.fixtureDefinition(polygonShape);
 
-    body.createFixture(fixture);
+    body = ShapeUtils.createBody(bodyDefinition,fixture,this);
+
   }
+  
   void makeStatic(){
     if (body.getType()!= BodyType.STATIC){
       try{
