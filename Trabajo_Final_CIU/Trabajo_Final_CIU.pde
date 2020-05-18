@@ -5,37 +5,35 @@ import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.*;
 
-// A list for all of our rectangles
 ArrayList<Box> boxes;
 ArrayList boundaries;
 ArrayList<Piece> pieceCollection; 
 ArrayList<Integer> staticMaker,staticCola;
 ArrayList<Integer> dynamicMaker,dynamicCola;
 static Box2DProcessing box2d;
-
-//Box d,a;
+;
 Box leftBase, centerBase, rightBase;
-//Box piece1, piece2, piece3, piece4, piece5;
 HandBox handBox ;
-int conter;
+int accountant;
 Spring spring;
 Boolean pressed = false;
 int freeId;
 int[] towerLastId;
 boolean staticAccess,dynamicAccess;
 int numberOfPieces = 6;
+
 void setup() {
+  
   size(1000, 1000);
   arrayListInitizalizers();
-  conter = 0;
+  accountant = 0;
   smooth();
   createBox2DWorld();
 
   spring = new Spring();
   createBases();
   createGameField();
-  
-  
+   
   initilizePiecesLogic();
   
   for (int i = 0; i < numberOfPieces - 1; i++){
@@ -43,29 +41,18 @@ void setup() {
   }
 }
 
-void createGameField(){
-  createBoundaries();
-  createPieces(numberOfPieces);
-}
 void draw() {
-  
+  background(255);
   theDynamicMaker();
   theStaticMaker();
-  //if(freeId != -1 && pieceCollection.get(freeId).getBodyType() == BodyType.STATIC);
-  background(255);
-  conter++;
-  // We must always step through time!
   
+  accountant++;
   
   box2d.step();    
 
   spring.update(mouseX, mouseY);
-  //d.display();
-  //a.display();
-  leftBase.display();
-  centerBase.display();
-  rightBase.display();
-
+  displayBases();
+  
   if (mousePressed) {
     //handBox.updatePosition(mouseX,mouseY);
     handBox.display();
@@ -77,6 +64,13 @@ void draw() {
   line(width/3, 0, width/3, 1000);
   line(width/3 * 2, 0, width/3*2, 1000);
   
+}
+
+void displayBases(){
+  leftBase.display();
+  centerBase.display();
+  rightBase.display();
+
 }
 void createPieces(int nPieces) {
   pieceCollection = new ArrayList<Piece>();
@@ -341,4 +335,9 @@ void initilizePiecesLogic(){
   towerLastId[0]= numberOfPieces -1; 
   towerLastId[1]=-1; 
   towerLastId[2]=-1;
+}
+
+void createGameField(){
+  createBoundaries();
+  createPieces(numberOfPieces);
 }
