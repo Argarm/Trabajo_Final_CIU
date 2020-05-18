@@ -1,8 +1,9 @@
 import shiffman.box2d.*;
 import org.jbox2d.collision.shapes.*;
 import org.jbox2d.common.*;
+import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.dynamics.*;
-
+import org.jbox2d.dynamics.contacts.*;
 
 // A list for all of our rectangles
 ArrayList<Box> boxes;
@@ -24,10 +25,8 @@ int[] towerLastId;
 boolean staticAccess,dynamicAccess;
 int numberOfPieces = 6;
 void setup() {
-  staticMaker = new ArrayList<Integer>();
-  dynamicMaker = new ArrayList<Integer>();
-  staticCola = new ArrayList<Integer>();
-  dynamicCola = new ArrayList<Integer>();
+  arrayListInitizalizers();
+  
   conter = 0;
   size(1000, 1000);
   smooth();
@@ -58,6 +57,12 @@ void setup() {
   for (int i = 0; i < numberOfPieces - 1; i++){
     staticMaker.add(i);
   }
+}
+void arrayListInitizalizers(){
+  staticMaker = new ArrayList<Integer>();
+  dynamicMaker = new ArrayList<Integer>();
+  staticCola = new ArrayList<Integer>();
+  dynamicCola = new ArrayList<Integer>();
 }
 void draw() {
   
