@@ -9,22 +9,14 @@ class HandBox {
     w = ancho;
     h = alto;
 
-    // Build Body
-    BodyDef bd = ShapeUtils.createBodyDefinition(x,y,b);
-    
-    body = box2d.createBody(bd);
-  body.setUserData(this);
-
-   // Define a polygon (this is what we use for a rectangle)
-   
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w,h);
     
-    // Define a fixture
-    
+    BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x,y,b);
+
     FixtureDef fixture = ShapeUtils.defineFixture(polygonShape);
 
-    // Attach Fixture to Body               
-    body.createFixture(fixture);
+    body = ShapeUtils.createBody(bodyDefinition,fixture,this);
+    
   }
 
   void display() {
