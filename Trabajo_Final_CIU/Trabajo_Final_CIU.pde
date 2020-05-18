@@ -14,7 +14,7 @@ ArrayList<Integer> dynamicMaker,dynamicCola;
 static Box2DProcessing box2d;
 
 //Box d,a;
-Box apile1, apile2, apile3;
+Box leftBase, centerBase, rightBase;
 //Box piece1, piece2, piece3, piece4, piece5;
 HandBox handBox ;
 int conter;
@@ -53,9 +53,9 @@ void setup() {
   }
 }
 void createBases(){
-  apile1 = new Box(width/6, 2*height/3, 200, 30, BodyType.STATIC,0);
-  apile2 = new Box(width/6 * 3, 2*height/3, 200, 30, BodyType.STATIC,1);
-  apile3 = new Box(width/6 * 5, 2*height/3, 200, 30, BodyType.STATIC,2);
+  leftBase = new Box(width/6, 2*height/3, 200, 30, BodyType.STATIC,0);
+  centerBase = new Box(width/6 * 3, 2*height/3, 200, 30, BodyType.STATIC,1);
+  rightBase = new Box(width/6 * 5, 2*height/3, 200, 30, BodyType.STATIC,2);
 
 }
 void createBox2DWorld(){
@@ -84,9 +84,9 @@ void draw() {
   spring.update(mouseX, mouseY);
   //d.display();
   //a.display();
-  apile1.display();
-  apile2.display();
-  apile3.display();
+  leftBase.display();
+  centerBase.display();
+  rightBase.display();
 
   if (mousePressed) {
     //handBox.updatePosition(mouseX,mouseY);
