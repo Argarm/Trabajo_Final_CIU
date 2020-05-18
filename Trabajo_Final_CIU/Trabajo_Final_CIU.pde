@@ -79,16 +79,8 @@ void mouseReleased() {
   println(freeId);
   println(freeId);
 }
+
 void mousePressed() {
-  /*if (!pressed){
-   
-   //
-   
-   
-   pressed = true; 
-   
-   }*/
-  //handBox = new HandBox(mouseX,mouseY,20,20,BodyType.KINEMATIC);
   handBox = new HandBox(mouseX, mouseY, 20, 20, BodyType.DYNAMIC);
   handBox.teleport(box2d.coordPixelsToWorld(mouseX, mouseY));
   spring.bind(mouseX, mouseY, handBox);
@@ -208,11 +200,12 @@ void endContact(Contact con) {
 }
 
 void theStaticMaker() {
-  if(staticCola.size() > 0){ staticMaker.addAll(staticCola);staticCola.clear();}
+  if(staticCola.size() > 0){
+    staticMaker.addAll(staticCola);
+    staticCola.clear();
+  }
   if (staticMaker.size() > 0) {
-    //println("Static " + staticMaker);
     for (Integer id : staticMaker) {
-      //println("Static de " + id);
       pieceCollection.get(id).makeStatic();
     }
     staticMaker.clear();
@@ -220,11 +213,12 @@ void theStaticMaker() {
 }
 
 void theDynamicMaker() {
-  if(dynamicCola.size() > 0){ dynamicMaker.addAll(dynamicCola);dynamicCola.clear();}
+  if(dynamicCola.size() > 0){ 
+    dynamicMaker.addAll(dynamicCola);
+    dynamicCola.clear();
+  }
   if (dynamicMaker.size() > 0) {
-    //println("Dynamic " + dynamicMaker);
     for (Integer id : dynamicMaker) {
-       //println("Dynamic de " + id);
       pieceCollection.get(id).makeDynamic();
     }
   }
