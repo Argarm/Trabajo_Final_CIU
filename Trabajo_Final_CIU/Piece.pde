@@ -17,14 +17,10 @@ class Piece {
     body = box2d.createBody(bd);
     body.setUserData(this);
 
-    PolygonShape sd = new PolygonShape();
-    float box2dW = box2d.scalarPixelsToWorld(w/2);
-    float box2dH = box2d.scalarPixelsToWorld(h/2);  // Box2D considers the width and height of a
-    sd.setAsBox(box2dW, box2dH);            // rectangle to be the distance from the
-                           // center to the edge (so half of what we
-                          // normally think of as width or height.) 
+    PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w,h);
+    
     FixtureDef fd = new FixtureDef();
-    fd.shape = sd;
+    fd.shape = polygonShape;
     fd.density = 1;
     fd.friction = 0.3;
     fd.restitution = 0.5;
