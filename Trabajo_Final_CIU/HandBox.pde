@@ -1,13 +1,13 @@
-// A rectangular box
+
 class HandBox {
-  //  Instead of any of the usual variables, we will store a reference to a Box2D Body
+
   Body body;      
 
   float w,h;
 
-  HandBox(float x, float y,float ancho,float alto, BodyType b) {
-    w = ancho;
-    h = alto;
+  HandBox(float x, float y,float w,float h, BodyType b) {
+    this.w = w;
+    this.h = h;
 
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w,h);
     

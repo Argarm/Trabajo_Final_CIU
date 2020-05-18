@@ -22,6 +22,7 @@ class Box {
   int getId(){
     return id;
   }
+  
   void display() {
     // We need the Body’s location and angle
     Vec2 pos = box2d.getBodyPixelCoord(body);		
