@@ -5,15 +5,15 @@ class Box {
   float w,h;
   int id;
 
-  Box(float x, float y,float ancho,float alto, BodyType b, int newId) {
-    this.w = ancho;
-    this.h = alto;
+  Box(float x, float y,float w,float h, BodyType bodyType, int newId) {
+    this.w = w;
+    this.h = h;
     this.id = newId;
     
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w, h);
     FixtureDef fixture  = ShapeUtils.fixtureDefinition(polygonShape);
 
-    BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x, y, b);
+    BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x, y, bodyType);
 
     body = ShapeUtils.createBody(bodyDefinition, fixture, this);
 

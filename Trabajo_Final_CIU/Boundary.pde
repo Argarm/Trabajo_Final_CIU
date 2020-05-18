@@ -13,6 +13,7 @@ class Boundary {
 
     BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x,y,angle);
     body = ShapeUtils.createBody(bodyDefinition, polygonShape, this);
+    
   }
   
   void display() {
