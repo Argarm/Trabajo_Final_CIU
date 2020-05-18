@@ -30,44 +30,22 @@ void setup() {
   conter = 0;
   smooth();
   createBox2DWorld();
-  
 
   spring = new Spring();
   createBases();
+  createGameField();
   
   
-  // Create ArrayLists
-  boxes = new ArrayList<Box>();
-  createBoundaries();
-  createPieces(numberOfPieces);
-  box2d.listenForCollisions();
-
-  freeId = -1;
-  towerLastId = new int[3];
-  towerLastId[0]= numberOfPieces -1; 
-  towerLastId[1]=-1; 
-  towerLastId[2]=-1;
+  initilizePiecesLogic();
   
   for (int i = 0; i < numberOfPieces - 1; i++){
     staticMaker.add(i);
   }
 }
-void createBases(){
-  leftBase = new Box(width/6, 2*height/3, 200, 30, BodyType.STATIC,0);
-  centerBase = new Box(width/6 * 3, 2*height/3, 200, 30, BodyType.STATIC,1);
-  rightBase = new Box(width/6 * 5, 2*height/3, 200, 30, BodyType.STATIC,2);
 
-}
-void createBox2DWorld(){
-  box2d = new Box2DProcessing(this);    
-  box2d.createWorld();
-  box2d.setGravity(0, -10);
-}
-void arrayListInitizalizers(){
-  staticMaker = new ArrayList<Integer>();
-  dynamicMaker = new ArrayList<Integer>();
-  staticCola = new ArrayList<Integer>();
-  dynamicCola = new ArrayList<Integer>();
+void createGameField(){
+  createBoundaries();
+  createPieces(numberOfPieces);
 }
 void draw() {
   
@@ -334,4 +312,33 @@ int contains(int[] array,int v) {
     cont++;
   }
   return result;
+}
+
+void arrayListInitizalizers(){
+  staticMaker = new ArrayList<Integer>();
+  dynamicMaker = new ArrayList<Integer>();
+  staticCola = new ArrayList<Integer>();
+  dynamicCola = new ArrayList<Integer>();
+  boxes = new ArrayList<Box>();
+}
+
+void createBox2DWorld(){
+  box2d = new Box2DProcessing(this);    
+  box2d.createWorld();
+  box2d.setGravity(0, -10);
+  box2d.listenForCollisions();
+}
+
+void createBases(){
+  leftBase = new Box(width/6, 2*height/3, 200, 30, BodyType.STATIC,0);
+  centerBase = new Box(width/6 * 3, 2*height/3, 200, 30, BodyType.STATIC,1);
+  rightBase = new Box(width/6 * 5, 2*height/3, 200, 30, BodyType.STATIC,2);
+}
+
+void initilizePiecesLogic(){
+  freeId = -1;
+  towerLastId = new int[3];
+  towerLastId[0]= numberOfPieces -1; 
+  towerLastId[1]=-1; 
+  towerLastId[2]=-1;
 }
