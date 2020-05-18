@@ -12,7 +12,7 @@ class Box {
     id = newId;
     
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w, h);
-    FixtureDef fixture  = fixtureDefinition(polygonShape);
+    FixtureDef fixture  = ShapeUtils.fixtureDefinition(polygonShape);
 
     BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x, y, b);
 

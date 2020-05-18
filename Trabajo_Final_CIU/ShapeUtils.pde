@@ -47,7 +47,7 @@ static class ShapeUtils {
         return polygonShape;
   }
   
-  private static FixtureDef defineFixture(PolygonShape polygonShape){
+  private static FixtureDef fixtureDefinition(PolygonShape polygonShape){
     FixtureDef fixture = new FixtureDef();
     
     fixture.shape = polygonShape;

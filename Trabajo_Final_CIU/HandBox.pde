@@ -13,7 +13,7 @@ class HandBox {
     
     BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x,y,b);
 
-    FixtureDef fixture = ShapeUtils.defineFixture(polygonShape);
+    FixtureDef fixture = ShapeUtils.fixtureDefinition(polygonShape);
 
     body = ShapeUtils.createBody(bodyDefinition,fixture,this);
     
