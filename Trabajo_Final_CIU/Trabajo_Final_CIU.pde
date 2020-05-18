@@ -66,12 +66,7 @@ void draw() {
   
 }
 
-void displayBases(){
-  leftBase.display();
-  centerBase.display();
-  rightBase.display();
 
-}
 void createPieces(int nPieces) {
   pieceCollection = new ArrayList<Piece>();
   int maxWidth = width/6; 
@@ -85,13 +80,7 @@ void createPieces(int nPieces) {
     pieceCollection.add(newPiece);
   }
 }
-void createBoundaries() {
-  boundaries = new ArrayList();
-  boundaries.add(new Boundary(width/2, height-5, width, 10, 0));
-  boundaries.add(new Boundary(width/2, 5, width, 10, 0));
-  boundaries.add(new Boundary(width-5, height/2, 10, height, 0));
-  boundaries.add(new Boundary(5, height/2, 10, height, 0));
-}
+
 void mouseReleased() {
   pressed = false;
   spring.destroy();
@@ -314,6 +303,7 @@ void arrayListInitizalizers(){
   staticCola = new ArrayList<Integer>();
   dynamicCola = new ArrayList<Integer>();
   boxes = new ArrayList<Box>();
+  boundaries = new ArrayList();
 }
 
 void createBox2DWorld(){
@@ -340,4 +330,18 @@ void initilizePiecesLogic(){
 void createGameField(){
   createBoundaries();
   createPieces(numberOfPieces);
+}
+
+void displayBases(){
+  leftBase.display();
+  centerBase.display();
+  rightBase.display();
+
+}
+
+void createBoundaries() {
+  boundaries.add(new Boundary(width/2, height-5, width, 10, 0));
+  boundaries.add(new Boundary(width/2, 5, width, 10, 0));
+  boundaries.add(new Boundary(width-5, height/2, 10, height, 0));
+  boundaries.add(new Boundary(5, height/2, 10, height, 0));
 }
