@@ -19,13 +19,9 @@ class Piece {
 
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w,h);
     
-    FixtureDef fd = new FixtureDef();
-    fd.shape = polygonShape;
-    fd.density = 1;
-    fd.friction = 0.3;
-    fd.restitution = 0.5;
+    FixtureDef fixture = ShapeUtils.fixtureDefinition(polygonShape);
 
-    body.createFixture(fd);
+    body.createFixture(fixture);
   }
   void makeStatic(){
     if (body.getType()!= BodyType.STATIC){
