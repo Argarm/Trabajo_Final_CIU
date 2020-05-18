@@ -56,31 +56,51 @@ void draw() {
   if (mousePressed) {
     handBox.display();
   }
-  displayPieces();
+  displayGameObjects();
 
+  
+}
+
+void displayGameObjects(){
+  for (Piece p : pieceCollection) {
+    p.display();
+  }
   line(width/3, 0, width/3, 1000);
   line(width/3 * 2, 0, width/3*2, 1000);
   
 }
 
-void displayPieces(){
-  for (Piece p : pieceCollection) {
-    p.display();
-  }
-}
-
 void createPieces(int nPieces) {
-  pieceCollection = new ArrayList<Piece>();
+  
   int maxWidth = width/6; 
   int totalHeight = height/5;
   int firstHeight =  2*height/3;
   int pieceHeight = (totalHeight/nPieces);
+  println(pieceHeight);
   for (int i = 0; i < nPieces; i++) {
-    Piece newPiece = new Piece(width/6, firstHeight - (pieceHeight*(i+1 ))
-      , maxWidth * (nPieces - i)/nPieces, pieceHeight, i, BodyType.DYNAMIC, 
+    PieceDTO pieceDTO = fillPieceDTO(maxWidth,firstHeight,nPieces,pieceHeight,i);
+    
+    //println(pieceDTO.y + "  "+ firstHeight + " " + (pieceHeight*(i+1 )));
+    
+    Piece newPiece = new Piece(pieceDTO.x, firstHeight - (pieceHeight*(i+1 ))
+      , maxWidth * (nPieces - i)/nPieces, pieceHeight, pieceDTO.id, pieceDTO.bodyType, 
       color((255/nPieces)*(nPieces - i), (255/nPieces)*(i+1), 255));
     pieceCollection.add(newPiece);
   }
+}
+
+PieceDTO fillPieceDTO(int maxWidth,int firstHeight,int pieceHeight,int nPieces, int index){
+  PieceDTO pieceDTO = new PieceDTO();
+  pieceDTO.x = maxWidth;
+  pieceDTO.y = firstHeight - (pieceHeight*(index+1 ));
+  println(pieceHeight);
+  pieceDTO.w = maxWidth * (nPieces - index)/nPieces;
+  pieceDTO.h = pieceHeight;
+  pieceDTO.id = index;
+  pieceDTO.bodyType = BodyType.DYNAMIC;
+  pieceDTO.tone = color((255/nPieces)*(nPieces - index), (255/nPieces)*(index+1), 255);
+  return pieceDTO;
+   
 }
 
 void mouseReleased() {
@@ -304,6 +324,7 @@ void arrayListInitizalizers(){
   dynamicMaker = new ArrayList<Integer>();
   staticCola = new ArrayList<Integer>();
   dynamicCola = new ArrayList<Integer>();
+  pieceCollection = new ArrayList<Piece>();
   boxes = new ArrayList<Box>();
   boundaries = new ArrayList();
 }
