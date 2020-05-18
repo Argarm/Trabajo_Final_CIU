@@ -1,15 +1,14 @@
-// A rectangular box
+
 class Box {
-  //  Instead of any of the usual variables, we will store a reference to a Box2D Body
   Body body;      
 
   float w,h;
   int id;
 
   Box(float x, float y,float ancho,float alto, BodyType b, int newId) {
-    w = ancho;
-    h = alto;
-    id = newId;
+    this.w = ancho;
+    this.h = alto;
+    this.id = newId;
     
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w, h);
     FixtureDef fixture  = ShapeUtils.fixtureDefinition(polygonShape);
@@ -19,19 +18,6 @@ class Box {
     body = ShapeUtils.createBody(bodyDefinition, fixture, this);
 
   }
-
-  private FixtureDef fixtureDefinition(PolygonShape polygonShape){
-    FixtureDef fixture = new FixtureDef();
-    fixture.shape = polygonShape;
-    
-    fixture.density = 1;
-    fixture.friction = 0.3;
-    fixture.restitution = 0.5;
-
-    return fixture;
-  }
-
-
 
   int getId(){
     return id;
