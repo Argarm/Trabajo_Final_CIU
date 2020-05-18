@@ -12,9 +12,8 @@ class Piece {
     this.tone = tone;
     id = newId;
     
-    BodyDef bd = new BodyDef();
-    bd.type = bodyType;
-    bd.position.set(box2d.coordPixelsToWorld(x,y));
+    BodyDef bd = ShapeUtils.createBodyDefinition(x,y,bodyType);
+    
     body = box2d.createBody(bd);
     body.setUserData(this);
 
