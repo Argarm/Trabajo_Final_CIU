@@ -25,23 +25,17 @@ int[] towerLastId;
 boolean staticAccess,dynamicAccess;
 int numberOfPieces = 6;
 void setup() {
-  arrayListInitizalizers();
-  
-  conter = 0;
   size(1000, 1000);
+  arrayListInitizalizers();
+  conter = 0;
   smooth();
-  // Initialize and create the Box2D world
-  box2d = new Box2DProcessing(this);    
-  box2d.createWorld();
-  box2d.setGravity(0, -10);
+  createBox2DWorld();
+  
 
-  //d = new Box(width/2,height/2,25,310,BodyType.STATIC);
-  //piece1 = new Box(width/6,2*height/3,200,30,BodyType.DYNAMIC);
   spring = new Spring();
-  apile1 = new Box(width/6, 2*height/3, 200, 30, BodyType.STATIC,0);
-  apile2 = new Box(width/6 * 3, 2*height/3, 200, 30, BodyType.STATIC,1);
-  apile3 = new Box(width/6 * 5, 2*height/3, 200, 30, BodyType.STATIC,2);
-
+  createBases();
+  
+  
   // Create ArrayLists
   boxes = new ArrayList<Box>();
   createBoundaries();
@@ -57,6 +51,17 @@ void setup() {
   for (int i = 0; i < numberOfPieces - 1; i++){
     staticMaker.add(i);
   }
+}
+void createBases(){
+  apile1 = new Box(width/6, 2*height/3, 200, 30, BodyType.STATIC,0);
+  apile2 = new Box(width/6 * 3, 2*height/3, 200, 30, BodyType.STATIC,1);
+  apile3 = new Box(width/6 * 5, 2*height/3, 200, 30, BodyType.STATIC,2);
+
+}
+void createBox2DWorld(){
+  box2d = new Box2DProcessing(this);    
+  box2d.createWorld();
+  box2d.setGravity(0, -10);
 }
 void arrayListInitizalizers(){
   staticMaker = new ArrayList<Integer>();
