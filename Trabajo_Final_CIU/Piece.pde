@@ -43,6 +43,7 @@ class Piece {
       }
     }
   }
+  
   void display() {
     // We need the Body’s location and angle
     Vec2 pos = box2d.getBodyPixelCoord(body);    
@@ -58,6 +59,7 @@ class Piece {
     rect(0,0,w,h);
     popMatrix();
   }
+  
   int getId(){
     return id;
   }

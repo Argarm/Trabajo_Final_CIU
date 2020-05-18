@@ -2,9 +2,7 @@ import shiffman.box2d.*;
 import org.jbox2d.collision.shapes.*;
 import org.jbox2d.common.*;
 import org.jbox2d.dynamics.*;
-import org.jbox2d.dynamics.joints.*;
-import org.jbox2d.dynamics.*;
-import org.jbox2d.dynamics.contacts.*;
+
 
 // A list for all of our rectangles
 ArrayList<Box> boxes;
@@ -80,15 +78,6 @@ void draw() {
   apile2.display();
   apile3.display();
 
-
-  // When the mouse is clicked, add a new Box object
-
-
-  // Display all the boxes
-  /*for (Box b: boxes) {
-   b.display();
-   }*/
-
   if (mousePressed) {
     //handBox.updatePosition(mouseX,mouseY);
     handBox.display();
@@ -97,11 +86,9 @@ void draw() {
     p.display();
   }
 
-  /*if(handBox != null)
-   handBox.killBody();
-   handBox = null;*/
   line(width/3, 0, width/3, 1000);
   line(width/3 * 2, 0, width/3*2, 1000);
+  
 }
 void createPieces(int nPieces) {
   pieceCollection = new ArrayList<Piece>();
@@ -282,21 +269,6 @@ void theDynamicMaker() {
   dynamicMaker.clear();
 }
 
-/*void pieceToPieceController(Object o1, Object o2) {
-  Piece p1 = (Piece)o1;
-  Piece p2 = (Piece)o2;
-
-  if (p1.getBody().getPosition().y > p2.getBody().getPosition().y && p1.getBodyType() != BodyType.STATIC) {
-    System.out.println(p1.getId() + " > " + p2.getId());
-    //p2.makeStatic();
-    staticMaker.add(p2.getId());
-    //p2.getBody().setType(BodyType.STATIC);
-  } else if (p2.getBodyType() != BodyType.STATIC) {
-    System.out.println(p2.getId() + " > " + p1.getId());
-    staticMaker.add(p1.getId());
-  }
-}
-*/
 void pieceToBoxController(Object o1, Object o2) {
   Box b;
   Piece p;
@@ -315,13 +287,9 @@ void pieceToPieceReleaser(Object o1, Object o2) {
   Piece p2 = (Piece)o2;
 
   if (p1.getBody().getPosition().y > p2.getBody().getPosition().y && p1.getBodyType() != BodyType.DYNAMIC ) {
-    //System.out.println(p1.getId() + " > " + p2.getId());
-    //p2.makeStatic();
     
       dynamicMaker.add(p2.getId());
-    //p2.getBody().setType(BodyType.STATIC);
   } else if (p2.getBodyType() != BodyType.DYNAMIC) {
-    //System.out.println(p2.getId() + " > " + p1.getId());
     dynamicMaker.add(p1.getId());
   }
 }
@@ -330,7 +298,6 @@ void pieceToPieceReleaser(Object o1, Object o2) {
 void allStaticExcept(int[] nonStaticId){
   for (Piece p : pieceCollection){
     if (contains(nonStaticId,p.getId()) == -1 && !staticCola.contains(p.getId()) ) {
-      //println("Static = " + p.getId());
       staticCola.add(p.getId());
     }
   }
@@ -340,7 +307,6 @@ void makeArrayDynamic(int[] toDynamic){
   for (int n : toDynamic){
     
     if (n != -1 && !dynamicCola.contains(n) ) {
-      //println("Static = " + p.getId());
      
       dynamicCola.add(n);
     }
