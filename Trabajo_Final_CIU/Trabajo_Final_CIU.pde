@@ -61,51 +61,16 @@ void draw() {
   
 }
 
-void displayGameObjects(){
-  for (Piece p : pieceCollection) {
-    p.display();
-  }
-  line(width/3, 0, width/3, 1000);
-  line(width/3 * 2, 0, width/3*2, 1000);
-  
-}
 
 void createPieces(int nPieces) {
-  
-  int maxWidth = width/6; 
-  int totalHeight = height/5;
-  int firstHeight =  2*height/3;
-  int pieceHeight = (totalHeight/nPieces);
   for (int i = 0; i < nPieces; i++) {
-    PieceDTO pieceDTO = fillPieceDTO(maxWidth,firstHeight,pieceHeight,nPieces,i);
+    PieceDTO pieceDTO = fillPieceDTO(nPieces,i);
     Piece newPiece = new Piece(pieceDTO.x, pieceDTO.y,pieceDTO.w, pieceDTO.h, pieceDTO.id, pieceDTO.bodyType,pieceDTO.tone);
     pieceCollection.add(newPiece);
   }
 }
 
-PieceDTO fillPieceDTO(int maxWidth,int firstHeight,int pieceHeight,int nPieces, int index){
-  HashMap<String,Float> map = getPieceParameters(nPieces);
-  println(map.get("maxWidth").getClass());
-  PieceDTO pieceDTO = new PieceDTO();
-  pieceDTO.x = maxWidth;
-  pieceDTO.y = firstHeight - (pieceHeight*(index+1 ));
-  println(pieceHeight);
-  pieceDTO.w = maxWidth * (nPieces - index)/nPieces;
-  pieceDTO.h = pieceHeight;
-  pieceDTO.id = index;
-  pieceDTO.bodyType = BodyType.DYNAMIC;
-  pieceDTO.tone = color((255/nPieces)*(nPieces - index), (255/nPieces)*(index+1), 255);
-  return pieceDTO;
-   
-}
 
-HashMap getPieceParameters(int nPieces){
-  HashMap<String,Float> map = new HashMap<String,Float>();
-  map.put("maxWidth",width/6);
-  map.put("firstHeight",2*height/3);
-  map.put("pieceHeight",(height/5)/nPieces);
-  return map;
-}
 
 void mouseReleased() {
   pressed = false;
@@ -371,4 +336,37 @@ void createBoundaries() {
   boundaries.add(new Boundary(width/2, 5, width, 10, 0));
   boundaries.add(new Boundary(width-5, height/2, 10, height, 0));
   boundaries.add(new Boundary(5, height/2, 10, height, 0));
+}
+
+void displayGameObjects(){
+  for (Piece p : pieceCollection) {
+    p.display();
+  }
+  line(width/3, 0, width/3, 1000);
+  line(width/3 * 2, 0, width/3*2, 1000);
+  
+}
+
+PieceDTO fillPieceDTO(int nPieces, int index){
+  HashMap<String,Float> pieceParameters = getPieceParameters(nPieces);
+  PieceDTO pieceDTO = new PieceDTO();
+  
+  pieceDTO.x = pieceParameters.get("maxWidth");
+  pieceDTO.y = pieceParameters.get("firstHeight") - (pieceParameters.get("pieceHeight")*(index+1 ));
+  pieceDTO.w = pieceParameters.get("maxWidth") * (nPieces - index)/nPieces;
+  pieceDTO.h = pieceParameters.get("pieceHeight");
+  pieceDTO.id = index;
+  pieceDTO.bodyType = BodyType.DYNAMIC;
+  pieceDTO.tone = color((255/nPieces)*(nPieces - index), (255/nPieces)*(index+1), 255);
+  
+  return pieceDTO;
+   
+}
+
+HashMap getPieceParameters(int nPieces){
+  HashMap<String,Float> map = new HashMap<String,Float>();
+  map.put("maxWidth",width/6.0);
+  map.put("firstHeight",2*height/3.0);
+  map.put("pieceHeight",(height/5.0)/nPieces);
+  return map;
 }
