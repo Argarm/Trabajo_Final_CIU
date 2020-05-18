@@ -76,20 +76,16 @@ void createPieces(int nPieces) {
   int totalHeight = height/5;
   int firstHeight =  2*height/3;
   int pieceHeight = (totalHeight/nPieces);
-  println(pieceHeight);
   for (int i = 0; i < nPieces; i++) {
-    PieceDTO pieceDTO = fillPieceDTO(maxWidth,firstHeight,nPieces,pieceHeight,i);
-    
-    //println(pieceDTO.y + "  "+ firstHeight + " " + (pieceHeight*(i+1 )));
-    
-    Piece newPiece = new Piece(pieceDTO.x, firstHeight - (pieceHeight*(i+1 ))
-      , maxWidth * (nPieces - i)/nPieces, pieceHeight, pieceDTO.id, pieceDTO.bodyType, 
-      color((255/nPieces)*(nPieces - i), (255/nPieces)*(i+1), 255));
+    PieceDTO pieceDTO = fillPieceDTO(maxWidth,firstHeight,pieceHeight,nPieces,i);
+    Piece newPiece = new Piece(pieceDTO.x, pieceDTO.y,pieceDTO.w, pieceDTO.h, pieceDTO.id, pieceDTO.bodyType,pieceDTO.tone);
     pieceCollection.add(newPiece);
   }
 }
 
 PieceDTO fillPieceDTO(int maxWidth,int firstHeight,int pieceHeight,int nPieces, int index){
+  HashMap<String,Float> map = getPieceParameters(nPieces);
+  println(map.get("maxWidth").getClass());
   PieceDTO pieceDTO = new PieceDTO();
   pieceDTO.x = maxWidth;
   pieceDTO.y = firstHeight - (pieceHeight*(index+1 ));
@@ -101,6 +97,14 @@ PieceDTO fillPieceDTO(int maxWidth,int firstHeight,int pieceHeight,int nPieces, 
   pieceDTO.tone = color((255/nPieces)*(nPieces - index), (255/nPieces)*(index+1), 255);
   return pieceDTO;
    
+}
+
+HashMap getPieceParameters(int nPieces){
+  HashMap<String,Float> map = new HashMap<String,Float>();
+  map.put("maxWidth",width/6);
+  map.put("firstHeight",2*height/3);
+  map.put("pieceHeight",(height/5)/nPieces);
+  return map;
 }
 
 void mouseReleased() {
