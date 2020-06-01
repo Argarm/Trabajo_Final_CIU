@@ -4,7 +4,15 @@ import org.jbox2d.common.*;
 import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.*;
+import arb.soundcipher.*;
+import java.util.ArrayDeque;
 
+
+
+
+
+
+ArrayDeque<Integer>[] torres;
 ArrayList<Box> boxes;
 ArrayList boundaries;
 ArrayList<Piece> pieceCollection; 
@@ -21,6 +29,7 @@ int freeId;
 int[] towerLastId;
 boolean staticAccess,dynamicAccess;
 int numberOfPieces = 6;
+SoundCipher sc;
 
 void setup() {
   
@@ -35,10 +44,17 @@ void setup() {
   createGameField();
    
   initilizePiecesLogic();
-  
+  torres = new ArrayDeque[3];
+  torres[0] = new ArrayDeque<Integer>();
+  torres[1] = new ArrayDeque<Integer>();
+  torres[2] = new ArrayDeque<Integer>();
   for (int i = 0; i < numberOfPieces - 1; i++){
     staticMaker.add(i);
+    torres[0].push(i);
   }
+  torres[0].push(numberOfPieces - 1);
+  sc = new SoundCipher(this);
+  
 }
 
 void draw() {
@@ -76,8 +92,6 @@ void mouseReleased() {
   pressed = false;
   spring.destroy();
   handBox.killBody();
-  println(freeId);
-  println(freeId);
 }
 
 void mousePressed() {
@@ -96,25 +110,31 @@ void beginContact(Contact con) {
   Object o1 = b1.getUserData();
   Object o2 = b2.getUserData();
   
-  if (o1 == null ||o2 == null || o1.getClass() == HandBox.class || o2.getClass() == HandBox.class) return ; 
+  
+  if (o1 == null ||o2 == null || o1.getClass() == HandBox.class || o2.getClass() == HandBox.class){ sc.playNote(5, 40, 0.1);;return; }; 
   //System.out.println("Hay colisión");
   
   if (o1.getClass() == Piece.class &&
     o2.getClass() == Piece.class){
       Piece p1 = (Piece)o1;
       Piece p2 = (Piece)o2;
-      if (p1.getBody().getPosition().y > p2.getBody().getPosition().y  && freeId == p1.getId() && -1 != contains(towerLastId,p2.getId()) && p1.getId() > p2.getId() ) {
+      if(freeId != -1 ) sc.playNote((10 + p1.getId())*5, 75, 0.2);
+      if (p1.getBody().getPosition().y > p2.getBody().getPosition().y  && freeId == p1.getId() && -1 != towerHead(p2.getId()) && p1.getId() > p2.getId() ) {
+        
         println(p1.getId() + " toca a " + p2.getId() );
-        int tower = contains(towerLastId,p2.getId());
-        towerLastId[tower] = p1.getId();
+        int tower = towerHead(p2.getId());
+        //towerLastId[tower] = p1.getId();
+        torres[tower].push(p1.getId());
         freeId = -1;
-        makeArrayDynamic(towerLastId);
-      }else if(freeId == p2.getId() && -1 != contains(towerLastId,p1.getId()) && p2.getId() > p1.getId() ){
+        towerHeadsDynamic();
+      }else if(freeId == p2.getId() && -1 != towerHead(p1.getId()) && p2.getId() > p1.getId() ){
+        
         println(p2.getId() + " toca a " + p1.getId() );
-        int tower = contains(towerLastId,p1.getId());
-        towerLastId[tower] = p2.getId();
+        int tower = towerHead(p1.getId());
+        torres[tower].push(p2.getId());
         freeId = -1;
-        makeArrayDynamic(towerLastId);
+        //makeArrayDynamic(towerLastId);
+        towerHeadsDynamic();
       }
     //pieceToPieceController(o1, o2);  
   }
@@ -128,18 +148,24 @@ void beginContact(Contact con) {
       b = (Box)o2;
       p = (Piece)o1;
     }
-    if(freeId == p.getId() && towerLastId[b.getId()] == -1 ){
+    if(freeId != -1 ) sc.playNote((10 + p.getId())*6, 50, 0.2);
+    if(freeId == p.getId() && torres[b.getId()].isEmpty() ){
+      sc.playNote((10 + p.getId())*5, 75, 0.2);
       println(p.getId() + " toca un bloque " );
-      towerLastId[b.getId()]= p.getId();
+      //towerLastId[b.getId()]= p.getId();
+      torres[b.getId()].push(p.getId());
       freeId = -1;
-      makeArrayDynamic(towerLastId);
+      towerHeadsDynamic();
       
       
     }
     //pieceToBoxController(o1, o2);*/
     
+  }else sc.playNote((10), 45, 0.2);
+  print("freeId = " + freeId + ";  towers = ");
+  for(int i = 0; i < torres.length; i++){
+    println(torres[i]);
   }
-  //println(towerLastId);
 }
 
 void endContact(Contact con) {
@@ -157,22 +183,35 @@ void endContact(Contact con) {
     o2.getClass() == Piece.class) { 
     Piece p1 = (Piece)o1;
     Piece p2 = (Piece)o2;
-    int tower = contains(towerLastId,p1.getId());
-    if (tower != -1 && freeId == -1 && p1.getBodyType() != BodyType.STATIC){//p2.getId() != freeId && p1.getBodyType() != BodyType.STATIC){
+    
+    int tower = towerHead(p1.getId());
+    
+    if (tower != -1 && freeId == -1 && p1.getBodyType() != BodyType.STATIC ){//p2.getId() != freeId && p1.getBodyType() != BodyType.STATIC){
       println( p1.getId() + " se separa de " + p2.getId());
       int id = p1.getId() ;
       freeId = id;
-      towerLastId[tower] = p2.getId();
-      allStaticExcept(new int[] {id});
+      //towerLastId[tower] = p2.getId();
+      torres[tower].pop();
+      if (torres[tower].peek() == p2.getId()){
+        freeId = id;
+        allStaticExcept(new int[] {id});
+      }
+      else
+        torres[tower].push(id);
       return;
     }
-    tower = contains(towerLastId,p2.getId());
+    tower = towerHead(p2.getId());
     if(tower != -1 && freeId == -1 && p2.getBodyType() != BodyType.STATIC){//p1.getId() != freeId ){
       println( p2.getId() + " se separa de " + p1.getId());
       int id = p2.getId() ;
-      freeId = id;
-      towerLastId[tower] = p1.getId();
-      allStaticExcept(new int[] {id});
+      
+      torres[tower].pop();
+      if (torres[tower].peek() == p1.getId()){
+        freeId = id;
+        allStaticExcept(new int[] {id});
+      }
+      else
+        torres[tower].push(id);
       return;
     }
    
@@ -188,15 +227,20 @@ void endContact(Contact con) {
       p = (Piece)o1;
     }
     
-    if(-1 != contains(towerLastId,p.getId()) && freeId == -1 && p.getBodyType() != BodyType.STATIC){
+    if(-1 != towerHead(p.getId()) && freeId == -1 && p.getBodyType() != BodyType.STATIC){
         println( p.getId() + " se separa de un bloque" );
         int id = p.getId() ;
         freeId = id;
-        towerLastId[b.getId()] = -1;
+        torres[b.getId()].pop();
         allStaticExcept(new int[] {id});
         
     }
   }
+  print("freeId = " + freeId + ";  towers = ");
+  for(int i = 0; i < torres.length; i++){
+    println(torres[i]);
+  }
+
 }
 
 void theStaticMaker() {
@@ -269,11 +313,36 @@ void makeArrayDynamic(int[] toDynamic){
   }
 }
 
+void towerHeadsDynamic(){
+  for (ArrayDeque<Integer> n : torres){
+    
+    if (!n.isEmpty() && !dynamicCola.contains(n.peek()) ) {
+     
+      dynamicCola.add(n.peek());
+    }
+  }
+}
+
 int contains(int[] array,int v) {
   int cont = 0;
   int result = -1;
   for(int i : array){
     if(i == v){
+      result = cont;
+      break;
+    }
+    cont++;
+  }
+  return result;
+}
+
+int towerHead(int v){
+  int cont = 0;
+  int result = -1;
+  
+  for(ArrayDeque<Integer> i : torres){
+    if(!i.isEmpty() && i.peek() == v){
+      
       result = cont;
       break;
     }
