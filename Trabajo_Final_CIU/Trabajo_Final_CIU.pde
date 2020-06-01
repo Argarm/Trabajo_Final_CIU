@@ -229,9 +229,9 @@ void endContact(Contact con) {
     
     if(-1 != towerHead(p.getId()) && freeId == -1 && p.getBodyType() != BodyType.STATIC){
         println( p.getId() + " se separa de un bloque" );
-        int id = p.getId() ;
+        int id = p.getId();
         freeId = id;
-        torres[b.getId()].pop();
+        if(!torres[towerHead(p.getId())].isEmpty())torres[towerHead(p.getId())].pop();
         allStaticExcept(new int[] {id});
         
     }
