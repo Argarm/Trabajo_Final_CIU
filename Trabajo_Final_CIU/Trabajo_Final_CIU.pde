@@ -6,40 +6,43 @@ import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.*;
 import arb.soundcipher.*;
 import java.util.ArrayDeque;
-
-
-
-
-
+import kinect4WinSDK.Kinect;
+import kinect4WinSDK.SkeletonData;
+import java.awt.Point;
 
 ArrayDeque<Integer>[] torres;
 ArrayList<Box> boxes;
 ArrayList boundaries;
-ArrayList<Piece> pieceCollection; 
+ArrayList<Piece> pieceCollection;
 ArrayList<Integer> staticMaker,staticCola;
 ArrayList<Integer> dynamicMaker,dynamicCola;
 static Box2DProcessing box2d;
-;
+Kinect kinect;
 Box leftBase, centerBase, rightBase;
-HandBox handBox ;
+HandBox rightHandBox, leftHandBox;
 int accountant;
-Spring spring;
+Spring springRightHand, springLeftHand;
 Boolean pressed = false;
 int freeId;
 int[] towerLastId;
 boolean staticAccess,dynamicAccess;
 int numberOfPieces = 6;
 SoundCipher sc;
+ArrayList <SkeletonData> bodies;
+Point rightHandPos;
+Point leftHandPos;
 
-void setup() {
+void setup(){
   
-  size(1000, 1000);
+  size(640, 480);
+  kinect = new Kinect(this);
   arrayListInitizalizers();
   accountant = 0;
   smooth();
   createBox2DWorld();
-
-  spring = new Spring();
+  bodies = new ArrayList<SkeletonData>();
+  springRightHand = new Spring();
+  springLeftHand = new Spring();
   createBases();
   createGameField();
    
@@ -54,11 +57,23 @@ void setup() {
   }
   torres[0].push(numberOfPieces - 1);
   sc = new SoundCipher(this);
+
+  leftHandBox = new HandBox(width / 2, height / 2 - 50, 20,  20, BodyType.DYNAMIC);
+  leftHandBox.teleport(box2d.coordPixelsToWorld(width / 2, height / 2 - 50));
+  springLeftHand.bind(width / 2, height / 2 - 50, leftHandBox);
   
+  rightHandBox = new HandBox(width / 2, height / 2 - 50, 20,  20, BodyType.DYNAMIC);
+  rightHandBox.teleport(box2d.coordPixelsToWorld(width / 2, height / 2 - 50));
+  springRightHand.bind(width / 2, height / 2 - 50, rightHandBox);
 }
 
-void draw() {
-  background(255);
+void draw(){
+  background(0);
+  image(kinect.GetImage(),0,0,width,height);
+  
+  for (int i=0; i<bodies.size (); i++)
+    drawSkeleton(bodies.get(i));
+  
   theDynamicMaker();
   theStaticMaker();
   
@@ -66,38 +81,29 @@ void draw() {
   
   box2d.step();    
 
-  spring.update(mouseX, mouseY);
-  displayBases();
-  
-  if (mousePressed) {
-    handBox.display();
+  if (rightHandPos != null){
+    springRightHand.update(rightHandPos.x, rightHandPos.y); 
   }
+
+  if (leftHandPos != null){
+    springLeftHand.update(leftHandPos.x, leftHandPos.y); 
+  }
+    
+  displayBases();
+
+  rightHandBox.display();
+  leftHandBox.display();
+  
   displayGameObjects();
 
-  
 }
 
-
-void createPieces(int nPieces) {
+void createPieces(int nPieces){
   for (int i = 0; i < nPieces; i++) {
     PieceDTO pieceDTO = fillPieceDTO(nPieces,i);
     Piece newPiece = new Piece(pieceDTO.x, pieceDTO.y,pieceDTO.w, pieceDTO.h, pieceDTO.id, pieceDTO.bodyType,pieceDTO.tone);
     pieceCollection.add(newPiece);
   }
-}
-
-
-
-void mouseReleased() {
-  pressed = false;
-  spring.destroy();
-  handBox.killBody();
-}
-
-void mousePressed() {
-  handBox = new HandBox(mouseX, mouseY, 20, 20, BodyType.DYNAMIC);
-  handBox.teleport(box2d.coordPixelsToWorld(mouseX, mouseY));
-  spring.bind(mouseX, mouseY, handBox);
 }
 
 void beginContact(Contact con) {
@@ -112,7 +118,7 @@ void beginContact(Contact con) {
   
   
   if (o1 == null ||o2 == null || o1.getClass() == HandBox.class || o2.getClass() == HandBox.class){ sc.playNote(5, 40, 0.1);;return; }; 
-  //System.out.println("Hay colisión");
+  
   
   if (o1.getClass() == Piece.class &&
     o2.getClass() == Piece.class){
@@ -123,7 +129,7 @@ void beginContact(Contact con) {
         
         println(p1.getId() + " toca a " + p2.getId() );
         int tower = towerHead(p2.getId());
-        //towerLastId[tower] = p1.getId();
+        
         torres[tower].push(p1.getId());
         freeId = -1;
         towerHeadsDynamic();
@@ -133,10 +139,10 @@ void beginContact(Contact con) {
         int tower = towerHead(p1.getId());
         torres[tower].push(p2.getId());
         freeId = -1;
-        //makeArrayDynamic(towerLastId);
+        
         towerHeadsDynamic();
       }
-    //pieceToPieceController(o1, o2);  
+     
   }
   else if (o1.getClass() == Box.class || o2.getClass() == Box.class ){
     Box b;
@@ -152,14 +158,14 @@ void beginContact(Contact con) {
     if(freeId == p.getId() && torres[b.getId()].isEmpty() ){
       sc.playNote((10 + p.getId())*5, 75, 0.2);
       println(p.getId() + " toca un bloque " );
-      //towerLastId[b.getId()]= p.getId();
+      
       torres[b.getId()].push(p.getId());
       freeId = -1;
       towerHeadsDynamic();
       
       
     }
-    //pieceToBoxController(o1, o2);*/
+    
     
   }else sc.playNote((10), 45, 0.2);
   print("freeId = " + freeId + ";  towers = ");
@@ -186,11 +192,11 @@ void endContact(Contact con) {
     
     int tower = towerHead(p1.getId());
     
-    if (tower != -1 && freeId == -1 && p1.getBodyType() != BodyType.STATIC ){//p2.getId() != freeId && p1.getBodyType() != BodyType.STATIC){
+    if (tower != -1 && freeId == -1 && p1.getBodyType() != BodyType.STATIC ){
       println( p1.getId() + " se separa de " + p2.getId());
       int id = p1.getId() ;
       freeId = id;
-      //towerLastId[tower] = p2.getId();
+      
       torres[tower].pop();
       if (torres[tower].peek() == p2.getId()){
         freeId = id;
@@ -201,7 +207,7 @@ void endContact(Contact con) {
       return;
     }
     tower = towerHead(p2.getId());
-    if(tower != -1 && freeId == -1 && p2.getBodyType() != BodyType.STATIC){//p1.getId() != freeId ){
+    if(tower != -1 && freeId == -1 && p2.getBodyType() != BodyType.STATIC){
       println( p2.getId() + " se separa de " + p1.getId());
       int id = p2.getId() ;
       
@@ -280,7 +286,6 @@ void pieceToBoxController(Object o1, Object o2) {
     p = (Piece)o1;
   }
 }
-
 
 void pieceToPieceReleaser(Object o1, Object o2) {
   Piece p1 = (Piece)o1;
@@ -369,9 +374,9 @@ void createBox2DWorld(){
 }
 
 void createBases(){
-  leftBase = new Box(width/6, 2*height/3, 200, 30, BodyType.STATIC,0);
-  centerBase = new Box(width/6 * 3, 2*height/3, 200, 30, BodyType.STATIC,1);
-  rightBase = new Box(width/6 * 5, 2*height/3, 200, 30, BodyType.STATIC,2);
+  leftBase = new Box(width/6, height - height/5, width/4, height/15, BodyType.STATIC,0);
+  centerBase = new Box(width/6 * 3, height - height/5,width/4, height/15, BodyType.STATIC,1);
+  rightBase = new Box(width/6 * 5, height - height/5, width/4, height/15, BodyType.STATIC,2);
 }
 
 void initilizePiecesLogic(){
@@ -429,7 +434,96 @@ PieceDTO fillPieceDTO(int nPieces, int index){
 HashMap getPieceParameters(int nPieces){
   HashMap<String,Float> map = new HashMap<String,Float>();
   map.put("maxWidth",width/6.0);
-  map.put("firstHeight",2*height/3.0);
+  map.put("firstHeight",height - height/5.0);
   map.put("pieceHeight",(height/5.0)/nPieces);
   return map;
+}
+
+void drawSkeleton(SkeletonData _s){
+  
+  leftHandPos = DrawBone(_s, 
+  Kinect.NUI_SKELETON_POSITION_WRIST_LEFT, 
+  Kinect.NUI_SKELETON_POSITION_HAND_LEFT);
+  println("LEFT: ");
+  println(leftHandPos);
+  
+  rightHandPos = DrawBone(_s, 
+  Kinect.NUI_SKELETON_POSITION_WRIST_RIGHT, 
+  Kinect.NUI_SKELETON_POSITION_HAND_RIGHT);
+  println("RIGHT: ");
+  println(rightHandPos);
+}
+
+Point DrawBone(SkeletonData _s, int _j1, int _j2){
+  Point result = null;
+
+  pushStyle();
+  fill(255, 255, 0);
+  stroke(255, 255, 0);
+  if (_s.skeletonPositionTrackingState[_j1] != Kinect.NUI_SKELETON_POSITION_NOT_TRACKED &&
+    _s.skeletonPositionTrackingState[_j2] != Kinect.NUI_SKELETON_POSITION_NOT_TRACKED) {
+  
+    result = getRectangle(_s, _j1, _j2);
+  }
+  popStyle();
+  return result;
+}
+
+Point getRectangle(SkeletonData _s, int _j1, int _j2){
+
+  float x, y, w, h;
+  float wristX = _s.skeletonPositions[_j1].x*width;
+  float wristY = _s.skeletonPositions[_j1].y*height;
+  float handX = _s.skeletonPositions[_j2].x*width;
+  float handY = _s.skeletonPositions[_j2].y*height;
+
+  if (wristX < handX){
+    x = wristX;
+    w = handX - wristX;
+  }else{
+    x = handX;
+    w = wristX - handX;
+  }
+  
+  if (wristY < handY){
+    y = wristY;
+    h = handY - wristY;
+  }else{
+    y = handY;
+    h = wristY - handY;
+  }
+
+  return new Point((int)(x + w/2), (int)(y + h/2));
+
+}
+
+void appearEvent(SkeletonData _s){
+  if (_s.trackingState == Kinect.NUI_SKELETON_NOT_TRACKED) return;
+
+  synchronized(bodies) bodies.add(_s);
+}
+
+void disappearEvent(SkeletonData _s){
+  synchronized(bodies) {
+    for (int i=bodies.size ()-1; i>=0; i--) 
+    {
+      if (_s.dwTrackingID == bodies.get(i).dwTrackingID) 
+        bodies.remove(i);
+    }
+  }
+}
+
+void moveEvent(SkeletonData _b, SkeletonData _a){
+  if (_a.trackingState == Kinect.NUI_SKELETON_NOT_TRACKED) return;
+
+  synchronized(bodies) {
+    for (int i=bodies.size ()-1; i>=0; i--) 
+    {
+      if (_b.dwTrackingID == bodies.get(i).dwTrackingID) 
+      {
+        bodies.get(i).copy(_a);
+        break;
+      }
+    }
+  }
 }
