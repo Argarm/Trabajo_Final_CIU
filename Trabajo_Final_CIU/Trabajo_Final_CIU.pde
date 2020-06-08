@@ -500,7 +500,9 @@ Point getRectangle(SkeletonData _s, int _j1, int _j2){
 void appearEvent(SkeletonData _s){
   if (_s.trackingState == Kinect.NUI_SKELETON_NOT_TRACKED) return;
 
-  synchronized(bodies) bodies.add(_s);
+  synchronized(bodies) {
+    bodies.add(_s);
+  }
 }
 
 void disappearEvent(SkeletonData _s){
