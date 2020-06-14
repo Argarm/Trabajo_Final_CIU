@@ -9,6 +9,8 @@ import java.util.ArrayDeque;
 import kinect4WinSDK.Kinect;
 import kinect4WinSDK.SkeletonData;
 import java.awt.Point;
+import java.awt.Color;
+import controlP5.*;
 
 ArrayDeque<Integer>[] torres;
 ArrayList<Box> boxes;
@@ -17,7 +19,8 @@ ArrayList<Piece> pieceCollection;
 ArrayList<Integer> staticMaker,staticCola;
 ArrayList<Integer> dynamicMaker,dynamicCola;
 static Box2DProcessing box2d;
-Kinect kinect;
+
+//Kinect kinect;
 Box leftBase, centerBase, rightBase;
 HandBox rightHandBox, leftHandBox;
 int accountant;
@@ -28,19 +31,38 @@ int[] towerLastId;
 boolean staticAccess,dynamicAccess;
 int numberOfPieces = 6;
 SoundCipher sc;
-ArrayList <SkeletonData> bodies;
+Estado estado;
+enum Estado{
+  menuPrincipal,
+  menuOpciones,
+  juego,
+  pausa
+
+}
+color myColor;
+ControlP5 cp5;
+//ArrayList <SkeletonData> bodies;
 Point rightHandPos;
 Point leftHandPos;
-
+int posXButton;
+int tamXButton;
+int tamYButton;
+int posYButtonOffset;
+int buttonYSeparator;
+boolean cam;
 void setup(){
   
   size(640, 480);
-  kinect = new Kinect(this);
+  cp5 = new ControlP5(this);
+  //kinect = new Kinect(this);
+  buttonParametersInitializers();
   arrayListInitizalizers();
   accountant = 0;
   smooth();
   createBox2DWorld();
-  bodies = new ArrayList<SkeletonData>();
+  estado = Estado.menuPrincipal;
+  dibujaMenuPrincipal();
+  //bodies = new ArrayList<SkeletonData>();
   springRightHand = new Spring();
   springLeftHand = new Spring();
   createBases();
@@ -69,33 +91,34 @@ void setup(){
 
 void draw(){
   background(0);
-  image(kinect.GetImage(),0,0,width,height);
+  //image(kinect.GetImage(),0,0,width,height);
   
-  for (int i=0; i<bodies.size (); i++)
+  /*for (int i=0; i<bodies.size (); i++)
     drawSkeleton(bodies.get(i));
-  
-  theDynamicMaker();
-  theStaticMaker();
-  
-  accountant++;
-  
-  box2d.step();    
-
-  if (rightHandPos != null){
-    springRightHand.update(rightHandPos.x, rightHandPos.y); 
-  }
-
-  if (leftHandPos != null){
-    springLeftHand.update(leftHandPos.x, leftHandPos.y); 
-  }
+  */
+  if(estado == Estado.juego){
+    theDynamicMaker();
+    theStaticMaker();
     
-  displayBases();
+    accountant++;
+    
+    box2d.step();    
 
-  rightHandBox.display();
-  leftHandBox.display();
-  
-  displayGameObjects();
+    if (rightHandPos != null){
+      springRightHand.update(rightHandPos.x, rightHandPos.y); 
+    }
 
+    if (leftHandPos != null){
+      springLeftHand.update(leftHandPos.x, leftHandPos.y); 
+    }
+      
+    displayBases();
+
+    rightHandBox.display();
+    leftHandBox.display();
+    
+    displayGameObjects();
+  }
 }
 
 void createPieces(int nPieces){
@@ -500,25 +523,25 @@ Point getRectangle(SkeletonData _s, int _j1, int _j2){
 void appearEvent(SkeletonData _s){
   if (_s.trackingState == Kinect.NUI_SKELETON_NOT_TRACKED) return;
 
-  synchronized(bodies) {
+  /*synchronized(bodies) {
     bodies.add(_s);
-  }
+  }*/
 }
 
 void disappearEvent(SkeletonData _s){
-  synchronized(bodies) {
+  /*synchronized(bodies) {
     for (int i=bodies.size ()-1; i>=0; i--) 
     {
       if (_s.dwTrackingID == bodies.get(i).dwTrackingID) 
         bodies.remove(i);
     }
-  }
+  }*/
 }
 
 void moveEvent(SkeletonData _b, SkeletonData _a){
   if (_a.trackingState == Kinect.NUI_SKELETON_NOT_TRACKED) return;
 
-  synchronized(bodies) {
+  /*synchronized(bodies) {
     for (int i=bodies.size ()-1; i>=0; i--) 
     {
       if (_b.dwTrackingID == bodies.get(i).dwTrackingID) 
@@ -527,5 +550,159 @@ void moveEvent(SkeletonData _b, SkeletonData _a){
         break;
       }
     }
+  }*/
+}
+
+void keyPressed() {
+    if(key == ' '){
+      if(estado == Estado.juego){
+        estado = Estado.pausa;
+        dibujaMenuPausa();
+      }else {
+        estado = Estado.juego;
+        borraMenuPausa();
+      }
+    }
+}
+
+public void Comenzar() {
+  borraMenuPrincipal();
+  estado = Estado.juego;
+}
+
+public void Opciones() {
+  dibujaMenuOpciones();
+}
+
+
+public void Salir() {
+  delay(1000);
+  exit();
+}
+
+public void Sonido(){
+  int slidderX = round(posXButton + 1.1*tamXButton);
+  int slidderY = height/4;
+  int sliderWidth = 30;
+  int sliderHeight = 200;
+  if(cp5.getController("Volumen") != null)cp5.getController("Volumen").remove();
+  else cp5.addSlider("Volumen",0,10,5,slidderX,slidderY,sliderWidth,sliderHeight);
+}
+
+public void Dificultad(){
+
+}
+public void Camara(){
+  cam = !cam;
+  if(cam){
+    myColor = color(0,150,0);
+    cp5.getController("Camara")
+       .setColorBackground(myColor);
+  }else{
+    myColor = color(150,0,0);
+    cp5.getController("Camara")
+       .setColorBackground(myColor);
   }
+  
+}
+public void Atras(){
+  dibujaMenuPrincipal();
+}
+
+public void Reanudar(){
+  borraMenuPausa();
+  estado = Estado.juego;
+}
+
+void dibujaMenuPrincipal(){
+  if(estado == Estado.menuOpciones){
+    borraMenuOpciones();
+    estado = Estado.menuPrincipal;
+  }
+  cp5.addButton("Comenzar")
+     .setPosition(posXButton,posYButtonOffset)
+     .setSize(tamXButton,tamYButton);
+  
+
+  cp5.addButton("Opciones")
+     .setPosition(posXButton,posYButtonOffset+buttonYSeparator+tamYButton)
+     .setSize(tamXButton,tamYButton);
+     
+  cp5.addButton("Salir")
+     .setPosition(posXButton,posYButtonOffset+2*(buttonYSeparator+tamYButton))
+     .setSize(tamXButton,tamYButton);
+
+}
+
+void borraMenuOpciones(){
+  cp5.getController("Sonido").remove();
+  cp5.getController("Dificultad").remove();
+  cp5.getController("Camara").remove();
+  cp5.getController("Atras").remove();
+}
+
+
+void dibujaMenuOpciones(){
+  if(estado == Estado.menuPrincipal){
+    borraMenuPrincipal();
+    estado = Estado.menuOpciones;
+  }
+  if(estado == Estado.pausa){
+    borraMenuPausa();
+  }
+  int posYButtonOffsetOpciones = height/4;
+  cp5.addButton("Sonido")
+     .setPosition(posXButton,posYButtonOffsetOpciones)
+     .setSize(tamXButton,tamYButton);
+  
+  
+  cp5.addButton("Dificultad")
+     .setPosition(posXButton,posYButtonOffsetOpciones+buttonYSeparator+tamYButton)
+     .setSize(tamXButton,tamYButton);
+     
+  cp5.addButton("Camara").setColorBackground(myColor)
+     .setPosition(posXButton,posYButtonOffsetOpciones+2*(buttonYSeparator+tamYButton))
+     .setSize(tamXButton,tamYButton);
+
+  cp5.addButton("Atras")
+     .setPosition(posXButton,posYButtonOffsetOpciones+3*(buttonYSeparator+tamYButton))
+     .setSize(tamXButton,tamYButton);
+  
+}
+
+void borraMenuPrincipal(){
+  cp5.getController("Comenzar").remove();
+  cp5.getController("Opciones").remove();
+  cp5.getController("Salir").remove();
+}
+
+void dibujaMenuPausa(){
+  cp5.addButton("Reanudar")
+     .setPosition(posXButton,posYButtonOffset)
+     .setSize(tamXButton,tamYButton);
+  
+
+  /*cp5.addButton("Opciones")
+     .setPosition(posXButton,posYButtonOffset+buttonYSeparator+tamYButton)
+     .setSize(tamXButton,tamYButton);
+  */  
+  cp5.addButton("Salir")
+     .setPosition(posXButton,posYButtonOffset+1*(buttonYSeparator+tamYButton))
+     .setSize(tamXButton,tamYButton);
+}
+
+void borraMenuPausa(){
+  cp5.getController("Reanudar").remove();
+  //cp5.getController("Opciones").remove();
+  cp5.getController("Salir").remove();
+}
+
+void buttonParametersInitializers(){
+  tamXButton = 300;
+  posXButton = width/2-tamXButton/2;
+  tamYButton = 50;
+  posYButtonOffset = height/3;
+  buttonYSeparator = 3*(tamYButton/4);
+  myColor = color(0,150,0);
+  cam = true;
 }

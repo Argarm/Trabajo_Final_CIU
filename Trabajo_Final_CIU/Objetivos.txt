@@ -1,0 +1,8 @@
+
+- Comenzar partida
+- Opciones:
+	 	- Sonido
+		- Selección de dificultad
+		- Vista cámara Si/No
+
+- Salir cuando el jugador acabe
