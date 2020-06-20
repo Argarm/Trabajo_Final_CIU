@@ -1,4 +1,5 @@
 class Boundary {
+  
   float x, y, w, h;
   Body body;
 
@@ -7,20 +8,15 @@ class Boundary {
     this.y = y;
     this.w = w;
     this.h = h;
-
-    
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w, h);
-
     BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x,y,angle);
     body = ShapeUtils.createBody(bodyDefinition, polygonShape, this);
     
   }
   
   void display() {
-
     setConfiguration();
     float angle = body.getAngle();
-
     pushMatrix();
     translate(x,y);
     rotate(-angle);

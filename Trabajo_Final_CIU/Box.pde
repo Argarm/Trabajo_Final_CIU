@@ -1,4 +1,3 @@
-
 class Box {
   Body body;      
 
@@ -24,13 +23,13 @@ class Box {
   }
   
   void display() {
-    // We need the Body’s location and angle
+    
     Vec2 pos = box2d.getBodyPixelCoord(body);		
     float a = body.getAngle();
 
     pushMatrix();
-    translate(pos.x,pos.y);		// Using the Vec2 position and float angle to
-    rotate(-a);			        // translate and rotate the rectangle
+    translate(pos.x,pos.y);		
+    rotate(-a);			        
     fill(175);
     stroke(0);
     rectMode(CENTER);
@@ -44,6 +43,5 @@ class Box {
   
   void teleport(Vec2 nPos){
     body.setTransform(nPos,body.getAngle());
-    System.out.println(body.getPosition());
   }
 }

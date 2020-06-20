@@ -5,7 +5,5 @@ class PieceDTO{
   private float h;
   private int id;
   private BodyType bodyType;
-  private color tone;
-  
-  
+  private color tone; 
 }

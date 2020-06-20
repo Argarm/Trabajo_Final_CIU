@@ -4,22 +4,16 @@ class Piece {
   color tone;
   float w,h;
   int id;
-
-  Piece(float x, float y,float w,float h, int newId , BodyType bodyType, color tone) {
-    
+  
+  Piece(float x, float y,float w,float h, int newId , BodyType bodyType, color tone) {  
     this.w = w;
     this.h = h;
     this.tone = tone;
     id = newId;
-    
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w,h);
-    
     BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x,y,bodyType);
-
     FixtureDef fixture = ShapeUtils.fixtureDefinition(polygonShape);
-
     body = ShapeUtils.createBody(bodyDefinition,fixture,this);
-
   }
   
   void makeStatic(){
@@ -28,7 +22,7 @@ class Piece {
         body.setType(BodyType.STATIC);  
         body.setAwake(true);
       }catch (AssertionError e){
-        System.out.println(e);
+        System.err.println(e);
       }
     }
   }
@@ -39,20 +33,17 @@ class Piece {
         body.setType(BodyType.DYNAMIC);  
         body.setAwake(true);
       }catch (AssertionError e){
-        System.out.println(e);
+        System.err.println(e);
       }
     }
   }
   
   void display() {
-    // We need the Body’s location and angle
     Vec2 pos = box2d.getBodyPixelCoord(body);    
-    float a = body.getAngle();
-    
+    float a = body.getAngle();    
     pushMatrix();
-    translate(pos.x,pos.y);    // Using the Vec2 position and float angle to
-    rotate(-a);              // translate and rotate the rectangle
-    //fill(175);
+    translate(pos.x,pos.y);    
+    rotate(-a);                 
     fill(tone);
     stroke(0);
     rectMode(CENTER);
@@ -66,7 +57,6 @@ class Piece {
   
   
   boolean pieceIsAbove(Piece up, Piece down){
-    
     return false;
   }
   
@@ -77,6 +67,4 @@ class Piece {
   Body getBody(){
     return body;
   }
-  
-
 }
