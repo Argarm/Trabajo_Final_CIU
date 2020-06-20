@@ -20,7 +20,8 @@ ArrayList<Integer> staticMaker,staticCola;
 ArrayList<Integer> dynamicMaker,dynamicCola;
 static Box2DProcessing box2d;
 
-//Kinect kinect;
+Kinect kinect;
+PImage camara,altavoz, altavozmutiado;
 Box leftBase, centerBase, rightBase;
 HandBox rightHandBox, leftHandBox;
 int accountant;
@@ -32,16 +33,17 @@ boolean staticAccess,dynamicAccess;
 int numberOfPieces = 6;
 SoundCipher sc;
 Estado estado;
+boolean sonido;
 enum Estado{
   menuPrincipal,
   menuOpciones,
   juego,
   pausa
-
 }
+
 color myColor;
 ControlP5 cp5;
-//ArrayList <SkeletonData> bodies;
+ArrayList <SkeletonData> bodies;
 Point rightHandPos;
 Point leftHandPos;
 int posXButton;
@@ -50,24 +52,32 @@ int tamYButton;
 int posYButtonOffset;
 int buttonYSeparator;
 boolean cam;
+int dificultad = 0;
+PVector iconPosition, iconSize;
+
 void setup(){
   
   size(640, 480);
   cp5 = new ControlP5(this);
-  //kinect = new Kinect(this);
+  kinect = new Kinect(this);
   buttonParametersInitializers();
   arrayListInitizalizers();
   accountant = 0;
+  iconPosition = new PVector(32,32);
+  iconSize = new PVector(32,32);
   smooth();
+  sonido = true;
   createBox2DWorld();
   estado = Estado.menuPrincipal;
   dibujaMenuPrincipal();
-  //bodies = new ArrayList<SkeletonData>();
+  bodies = new ArrayList<SkeletonData>();
   springRightHand = new Spring();
   springLeftHand = new Spring();
   createBases();
   createGameField();
-   
+  camara = loadImage("camara.png");
+  altavoz = loadImage("altavoz.png");
+  altavozmutiado = loadImage("altavozmutiado.png");
   initilizePiecesLogic();
   torres = new ArrayDeque[3];
   torres[0] = new ArrayDeque<Integer>();
@@ -90,13 +100,16 @@ void setup(){
 }
 
 void draw(){
-  background(0);
-  //image(kinect.GetImage(),0,0,width,height);
-  
-  /*for (int i=0; i<bodies.size (); i++)
+  background(255);
+  if(cam)image(kinect.GetImage(),0,0,width,height);
+  for (int i=0; i<bodies.size (); i++)
     drawSkeleton(bodies.get(i));
-  */
+  
   if(estado == Estado.juego){
+    if(cam)image(camara,iconPosition.x,iconPosition.y,iconSize.x,iconSize.y);
+    else ;
+    if(sonido)image(altavoz,width-2*iconPosition.x,iconPosition.y,iconSize.x,iconSize.y);
+    else image(altavozmutiado,width-2*iconPosition.x,iconPosition.y,iconSize.x,iconSize.y);
     theDynamicMaker();
     theStaticMaker();
     
@@ -129,6 +142,33 @@ void createPieces(int nPieces){
   }
 }
 
+void mouseClicked(){
+  if(boundingBoxAltavoz()){
+    sonido = !sonido;
+  }
+  if(boundingBoxCamara()){
+    cam = !cam;
+  }
+}
+
+boolean boundingBoxAltavoz(){
+  if(mouseX > (width-2*iconPosition.x) && mouseX < (width-2*iconPosition.x)+iconSize.x){
+    if((mouseY > iconPosition.y) && mouseY < (iconPosition.y + iconSize.y)){
+      return true;
+    }
+  }
+  return false;
+}
+
+boolean boundingBoxCamara(){
+  if(mouseX > iconPosition.x && mouseX < iconPosition.x+iconSize.x){
+    if(mouseY >iconPosition.y  && mouseY < iconPosition.y+iconSize.y){
+      return true;
+    }
+  }
+  return false;
+}
+
 void beginContact(Contact con) {
   Fixture f1 = con.getFixtureA();
   Fixture f2 = con.getFixtureB();
@@ -140,14 +180,15 @@ void beginContact(Contact con) {
   Object o2 = b2.getUserData();
   
   
-  if (o1 == null ||o2 == null || o1.getClass() == HandBox.class || o2.getClass() == HandBox.class){ sc.playNote(5, 40, 0.1);;return; }; 
+  if (o1 == null ||o2 == null || o1.getClass() == HandBox.class || o2.getClass() == HandBox.class){ 
+    if (sonido){sc.playNote(5, 40, 0.1);} return; }; 
   
   
   if (o1.getClass() == Piece.class &&
     o2.getClass() == Piece.class){
       Piece p1 = (Piece)o1;
       Piece p2 = (Piece)o2;
-      if(freeId != -1 ) sc.playNote((10 + p1.getId())*5, 75, 0.2);
+      if(freeId != -1 && sonido) sc.playNote((10 + p1.getId())*5, 75, 0.2);
       if (p1.getBody().getPosition().y > p2.getBody().getPosition().y  && freeId == p1.getId() && -1 != towerHead(p2.getId()) && p1.getId() > p2.getId() ) {
         
         println(p1.getId() + " toca a " + p2.getId() );
@@ -177,8 +218,8 @@ void beginContact(Contact con) {
       b = (Box)o2;
       p = (Piece)o1;
     }
-    if(freeId != -1 ) sc.playNote((10 + p.getId())*6, 50, 0.2);
-    if(freeId == p.getId() && torres[b.getId()].isEmpty() ){
+    if(freeId != -1 && sonido) sc.playNote((10 + p.getId())*6, 50, 0.2);
+    if(freeId == p.getId() && torres[b.getId()].isEmpty() && sonido){
       sc.playNote((10 + p.getId())*5, 75, 0.2);
       println(p.getId() + " toca un bloque " );
       
@@ -190,7 +231,8 @@ void beginContact(Contact con) {
     }
     
     
-  }else sc.playNote((10), 45, 0.2);
+  }else if (sonido) {sc.playNote((10), 45, 0.2);};
+
   print("freeId = " + freeId + ";  towers = ");
   for(int i = 0; i < torres.length; i++){
     println(torres[i]);
@@ -523,25 +565,25 @@ Point getRectangle(SkeletonData _s, int _j1, int _j2){
 void appearEvent(SkeletonData _s){
   if (_s.trackingState == Kinect.NUI_SKELETON_NOT_TRACKED) return;
 
-  /*synchronized(bodies) {
+  synchronized(bodies) {
     bodies.add(_s);
-  }*/
+  }
 }
 
 void disappearEvent(SkeletonData _s){
-  /*synchronized(bodies) {
+  synchronized(bodies) {
     for (int i=bodies.size ()-1; i>=0; i--) 
     {
       if (_s.dwTrackingID == bodies.get(i).dwTrackingID) 
         bodies.remove(i);
     }
-  }*/
+  }
 }
 
 void moveEvent(SkeletonData _b, SkeletonData _a){
   if (_a.trackingState == Kinect.NUI_SKELETON_NOT_TRACKED) return;
 
-  /*synchronized(bodies) {
+  synchronized(bodies) {
     for (int i=bodies.size ()-1; i>=0; i--) 
     {
       if (_b.dwTrackingID == bodies.get(i).dwTrackingID) 
@@ -550,7 +592,7 @@ void moveEvent(SkeletonData _b, SkeletonData _a){
         break;
       }
     }
-  }*/
+  }
 }
 
 void keyPressed() {
@@ -590,8 +632,23 @@ public void Sonido(){
 }
 
 public void Dificultad(){
-
+  dificultad = dificultad == 2 ? 0 : dificultad + 1;
+  switch(dificultad){
+    case 0:
+      numberOfPieces = 3;
+      cp5.getController("Dificultad").setLabel("Dificultad - Facil");
+      break;
+    case 1:
+      numberOfPieces = 4;
+      cp5.getController("Dificultad").setLabel("Dificultad - Media");
+      break;
+    case 2:
+      numberOfPieces = 6;
+      cp5.getController("Dificultad").setLabel("Dificultad - Dificil");
+      break;
+  }
 }
+
 public void Camara(){
   cam = !cam;
   if(cam){
@@ -602,9 +659,11 @@ public void Camara(){
     myColor = color(150,0,0);
     cp5.getController("Camara")
        .setColorBackground(myColor);
-  }
+    
+  } 
   
 }
+
 public void Atras(){
   dibujaMenuPrincipal();
 }
@@ -634,11 +693,13 @@ void dibujaMenuPrincipal(){
 
 }
 
+
 void borraMenuOpciones(){
   cp5.getController("Sonido").remove();
   cp5.getController("Dificultad").remove();
   cp5.getController("Camara").remove();
   cp5.getController("Atras").remove();
+  if(cp5.getController("Volumen") != null) cp5.getController("Volumen").remove();
 }
 
 
@@ -655,11 +716,11 @@ void dibujaMenuOpciones(){
      .setPosition(posXButton,posYButtonOffsetOpciones)
      .setSize(tamXButton,tamYButton);
   
-  
   cp5.addButton("Dificultad")
      .setPosition(posXButton,posYButtonOffsetOpciones+buttonYSeparator+tamYButton)
      .setSize(tamXButton,tamYButton);
-     
+  Dificultad();   
+  
   cp5.addButton("Camara").setColorBackground(myColor)
      .setPosition(posXButton,posYButtonOffsetOpciones+2*(buttonYSeparator+tamYButton))
      .setSize(tamXButton,tamYButton);
@@ -669,6 +730,7 @@ void dibujaMenuOpciones(){
      .setSize(tamXButton,tamYButton);
   
 }
+
 
 void borraMenuPrincipal(){
   cp5.getController("Comenzar").remove();
@@ -680,20 +742,17 @@ void dibujaMenuPausa(){
   cp5.addButton("Reanudar")
      .setPosition(posXButton,posYButtonOffset)
      .setSize(tamXButton,tamYButton);
-  
-
-  /*cp5.addButton("Opciones")
-     .setPosition(posXButton,posYButtonOffset+buttonYSeparator+tamYButton)
-     .setSize(tamXButton,tamYButton);
-  */  
-  cp5.addButton("Salir")
+  cp5.addButton("Menu-Principal")
      .setPosition(posXButton,posYButtonOffset+1*(buttonYSeparator+tamYButton))
+     .setSize(tamXButton,tamYButton);
+  cp5.addButton("Salir")
+     .setPosition(posXButton,posYButtonOffset+2*(buttonYSeparator+tamYButton))
      .setSize(tamXButton,tamYButton);
 }
 
 void borraMenuPausa(){
   cp5.getController("Reanudar").remove();
-  //cp5.getController("Opciones").remove();
+  cp5.getController("Menu-Principal").remove();
   cp5.getController("Salir").remove();
 }
 
