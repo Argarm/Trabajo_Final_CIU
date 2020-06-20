@@ -43,8 +43,8 @@ Estado estado;
 HandBox leftHandBox, rightHandBox;
 
 int accountant, buttonYSeparator, freeId, posXButton, posYButtonOffset, tamXButton, tamYButton;
-int dificultad = 0;
-int numberOfPieces = 4;
+int dificultad = 1;
+int numberOfPieces = 1;
 int[] towerLastId;
 
 Kinect kinect;

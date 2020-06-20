@@ -31,7 +31,7 @@ public void Sonido() {
   int sliderWidth = 30;
   int sliderHeight = 200;
   if (cp5.getController("Volumen") != null)cp5.getController("Volumen").remove();
-  else cp5.addSlider("Volumen", 0, 100, 5, slidderX, slidderY, sliderWidth, sliderHeight);
+  else cp5.addSlider("Volumen", 0, 100, volumen, slidderX, slidderY, sliderWidth, sliderHeight);
 }
 
 public void Dificultad() {
@@ -74,6 +74,16 @@ public void Reanudar() {
   estado = Estado.juego;
 }
 
+public void Inicio(){
+  borraMenuPausa();
+  estado = Estado.menuPrincipal;
+  for (Piece piece : pieceCollection){
+    piece.killBody();
+  }
+  arrayListInitizalizers();
+  dibujaMenuPrincipal();
+}
+
 void dibujaMenuPrincipal() {
   if (estado == Estado.menuOpciones) {
     borraMenuOpciones();
@@ -82,7 +92,6 @@ void dibujaMenuPrincipal() {
   cp5.addButton("Comenzar")
     .setPosition(posXButton, posYButtonOffset)
     .setSize(tamXButton, tamYButton);
-
 
   cp5.addButton("Opciones")
     .setPosition(posXButton, posYButtonOffset+buttonYSeparator+tamYButton)
@@ -115,9 +124,9 @@ void dibujaMenuOpciones() {
     .setSize(tamXButton, tamYButton);
 
   cp5.addButton("Dificultad")
+    .setLabel("Dificultad - Media")
     .setPosition(posXButton, posYButtonOffsetOpciones+buttonYSeparator+tamYButton)
-    .setSize(tamXButton, tamYButton);
-  Dificultad();   
+    .setSize(tamXButton, tamYButton);   
 
   cp5.addButton("Camara").setColorBackground(myColor)
     .setPosition(posXButton, posYButtonOffsetOpciones+2*(buttonYSeparator+tamYButton))
@@ -138,7 +147,7 @@ void dibujaMenuPausa() {
   cp5.addButton("Reanudar")
     .setPosition(posXButton, posYButtonOffset)
     .setSize(tamXButton, tamYButton);
-  cp5.addButton("Menu-Principal")
+  cp5.addButton("Inicio")
     .setPosition(posXButton, posYButtonOffset+1*(buttonYSeparator+tamYButton))
     .setSize(tamXButton, tamYButton);
   cp5.addButton("Salir")
@@ -148,7 +157,7 @@ void dibujaMenuPausa() {
 
 void borraMenuPausa() {
   cp5.getController("Reanudar").remove();
-  cp5.getController("Menu-Principal").remove();
+  cp5.getController("Inicio").remove();
   cp5.getController("Salir").remove();
 }
 

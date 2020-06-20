@@ -55,16 +55,15 @@ class Piece {
     return id;
   }
   
-  
-  boolean pieceIsAbove(Piece up, Piece down){
-    return false;
-  }
-  
   BodyType getBodyType(){
     return body.getType();
   }
   
   Body getBody(){
     return body;
+  }
+
+  void killBody() {
+    box2d.destroyBody(body);
   }
 }

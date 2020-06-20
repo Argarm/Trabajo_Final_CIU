@@ -83,7 +83,7 @@ void arrayListInitizalizers() {
   boundaries = new ArrayList();
 }
 
-void createBox2DWorld(Box2DProcessing box2d) {
+void createBox2DWorld() {
   box2d.createWorld();
   box2d.setGravity(0, -10);
   box2d.listenForCollisions();
@@ -93,6 +93,14 @@ void createBases() {
   leftBase = new Box(width/6, height - height/5, width/4, height/30, BodyType.STATIC, 0);
   centerBase = new Box(width/6 * 3, height - height/5, width/4, height/30, BodyType.STATIC, 1);
   rightBase = new Box(width/6 * 5, height - height/5, width/4, height/30, BodyType.STATIC, 2);
+}
+
+void createPieces(int nPieces) {
+  for (int i = 0; i < nPieces; i++) {
+    PieceDTO pieceDTO = fillPieceDTO(nPieces, i);
+    Piece newPiece = new Piece(pieceDTO.x, pieceDTO.y, pieceDTO.w, pieceDTO.h, pieceDTO.id, pieceDTO.bodyType, pieceDTO.tone);
+    pieceCollection.add(newPiece);
+  }
 }
 
 void initilizePiecesLogic() {

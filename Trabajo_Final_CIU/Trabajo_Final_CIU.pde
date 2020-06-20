@@ -12,7 +12,7 @@ void setup() {
   iconSize = new PVector(32, 32);
   smooth();
   sonido = true;
-  createBox2DWorld(box2d);
+  createBox2DWorld();
 
   estado = Estado.menuPrincipal;
   dibujaMenuPrincipal();
@@ -35,20 +35,19 @@ void setup() {
   springRightHand.bind(width / 2, height / 2 - 50, rightHandBox);
 }
 
-void compruebaFinDeJuego(){
+void compruebaFinDeJuego() {
   Object[] estadoFin = estadoFinal.toArray();
   Object[] ultimaTorre = torres[2].toArray();
-  if(estadoFin.length == ultimaTorre.length){
+  if (estadoFin.length == ultimaTorre.length) {
     estado = Estado.ganar;
   }
-  
 }
 
 void draw() {
   background(255);
   if (cam)image(kinect.GetImage(), 0, 0, width, height);
   if (cp5.getController("Volumen") != null)
-  volumen = cp5.getController("Volumen").getValue()*127/100;
+    volumen = cp5.getController("Volumen").getValue();
   for (int i=0; i<bodies.size (); i++)
     drawSkeleton(bodies.get(i));
 
@@ -62,7 +61,7 @@ void draw() {
     theStaticMaker();
     accountant++;
     box2d.step();    
-    
+
     if (rightHandPos != null) {
       springRightHand.update(rightHandPos.x, rightHandPos.y);
     }
@@ -75,24 +74,19 @@ void draw() {
     rightHandBox.display();
     leftHandBox.display();
     displayGameObjects();
-  }else if(estado == Estado.ganar){
-    text("GANASTE PUTO!",width/2,height/2);
-
-  }
-}
-
-void createPieces(int nPieces) {
-  for (int i = 0; i < nPieces; i++) {
-    PieceDTO pieceDTO = fillPieceDTO(nPieces, i);
-    Piece newPiece = new Piece(pieceDTO.x, pieceDTO.y, pieceDTO.w, pieceDTO.h, pieceDTO.id, pieceDTO.bodyType, pieceDTO.tone);
-    pieceCollection.add(newPiece);
+  } else if (estado == Estado.ganar) {
+    text("GANASTE PUTO!", width/2, height/2);
   }
 }
 
 void mouseClicked() {
-  if(estado == Estado.ganar){
-    estado= Estado.menuPrincipal
-
+  if (estado == Estado.ganar) {
+    estado = Estado.menuPrincipal;
+    for (Piece piece : pieceCollection) {
+      piece.killBody();
+    }
+    arrayListInitizalizers();
+    dibujaMenuPrincipal();
   }
   if (boundingBoxAltavoz()) {
     sonido = !sonido;
@@ -133,7 +127,7 @@ void beginContact(Contact con) {
 
   if (o1 == null ||o2 == null || o1.getClass() == HandBox.class || o2.getClass() == HandBox.class) { 
     if (sonido) {
-      sc.playNote(5, max(volumen - 10,1.0), 0.1);
+      sc.playNote(5, max(volumen - 10, 1.0), 0.1);
     } 
     return;
   }; 
@@ -171,7 +165,7 @@ void beginContact(Contact con) {
       b = (Box)o2;
       p = (Piece)o1;
     }
-    if (freeId != -1 && sonido) sc.playNote((10 + p.getId())*6, max(volumen-5,2), 0.2);
+    if (freeId != -1 && sonido) sc.playNote((10 + p.getId())*6, max(volumen-5, 2), 0.2);
     if (freeId == p.getId() && torres[b.getId()].isEmpty() && sonido) {
       sc.playNote((10 + p.getId())*5, volumen, 0.2);
       println(p.getId() + " toca un bloque " );
@@ -181,7 +175,7 @@ void beginContact(Contact con) {
       towerHeadsDynamic();
     }
   } else if (sonido) {
-    sc.playNote((10), max(volumen-10,1), 0.2);
+    sc.playNote((10), max(volumen-10, 1), 0.2);
   };
 
   print("freeId = " + freeId + ";  towers = ");
@@ -294,13 +288,8 @@ void makeArrayDynamic(int[] toDynamic) {
 }
 
 void keyPressed() {
-  if (key == ' ') {
-    if (estado == Estado.juego) {
-      estado = Estado.pausa;
-      dibujaMenuPausa();
-    } else {
-      estado = Estado.juego;
-      borraMenuPausa();
-    }
+  if (key == ' ' && estado == Estado.juego) {
+    estado = Estado.pausa;
+    dibujaMenuPausa();
   }
 }
