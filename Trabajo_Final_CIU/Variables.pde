@@ -14,6 +14,7 @@ import shiffman.box2d.*;
 
 
 ArrayDeque<Integer>[] torres;
+ArrayDeque<Integer> estadoFinal;
 ArrayList boundaries;
 ArrayList<Box> boxes;
 ArrayList<Integer> dynamicCola, dynamicMaker, staticCola, staticMaker;
@@ -32,9 +33,10 @@ float volumen;
 
 enum Estado {
   menuPrincipal, 
-    menuOpciones, 
-    juego, 
-    pausa
+  menuOpciones, 
+  juego, 
+  pausa,
+  ganar
 }
 Estado estado;
 

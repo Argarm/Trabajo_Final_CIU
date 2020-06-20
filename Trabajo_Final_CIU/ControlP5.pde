@@ -12,6 +12,7 @@ public void Comenzar() {
     torres[0].push(i);
   }
   torres[0].push(numberOfPieces - 1);
+  estadoFinal = torres[0].clone();
   estado = Estado.juego;
 }
 

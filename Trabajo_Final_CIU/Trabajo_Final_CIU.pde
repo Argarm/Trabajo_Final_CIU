@@ -35,6 +35,15 @@ void setup() {
   springRightHand.bind(width / 2, height / 2 - 50, rightHandBox);
 }
 
+void compruebaFinDeJuego(){
+  Object[] estadoFin = estadoFinal.toArray();
+  Object[] ultimaTorre = torres[2].toArray();
+  if(estadoFin.length == ultimaTorre.length){
+    estado = Estado.ganar;
+  }
+  
+}
+
 void draw() {
   background(255);
   if (cam)image(kinect.GetImage(), 0, 0, width, height);
@@ -48,6 +57,7 @@ void draw() {
     else image(nocamara, iconPosition.x, iconPosition.y, iconSize.x, iconSize.y);
     if (sonido)image(altavoz, width-2*iconPosition.x, iconPosition.y, iconSize.x, iconSize.y);
     else image(noaltavoz, width-2*iconPosition.x, iconPosition.y, iconSize.x, iconSize.y);
+    compruebaFinDeJuego();
     theDynamicMaker();
     theStaticMaker();
     accountant++;
@@ -65,6 +75,9 @@ void draw() {
     rightHandBox.display();
     leftHandBox.display();
     displayGameObjects();
+  }else if(estado == Estado.ganar){
+    text("GANASTE PUTO!",width/2,height/2);
+
   }
 }
 
@@ -77,6 +90,10 @@ void createPieces(int nPieces) {
 }
 
 void mouseClicked() {
+  if(estado == Estado.ganar){
+    estado= Estado.menuPrincipal
+
+  }
   if (boundingBoxAltavoz()) {
     sonido = !sonido;
   }

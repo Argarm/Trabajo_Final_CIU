@@ -47,7 +47,7 @@ class Piece {
     fill(tone);
     stroke(0);
     rectMode(CENTER);
-    rect(0,0,w,h);
+    rect(0,0,w,h,7);
     popMatrix();
   }
   

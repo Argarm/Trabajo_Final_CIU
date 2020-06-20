@@ -1,4 +1,3 @@
-
 void theStaticMaker() {
   if (staticCola.size() > 0) {
     staticMaker.addAll(staticCola);
@@ -116,7 +115,7 @@ void displayBases() {
 }
 
 void createBoundaries() {
-  boundaries.add(new Boundary(width/2, height-5, width, 10, 0));
+  boundaries.add(new Boundary(width/2, (height - height/5) + 30, width, 10, 0));
   boundaries.add(new Boundary(width/2, 5, width, 10, 0));
   boundaries.add(new Boundary(width-5, height/2, 10, height, 0));
   boundaries.add(new Boundary(5, height/2, 10, height, 0));
