@@ -1,112 +1,4 @@
 
-void setup() {
-  volumen = 64;
-  box2d = new Box2DProcessing(this);
-  size(640, 480);
-  cp5 = new ControlP5(this);
-  kinect = new Kinect(this);
-  buttonParametersInitializers();
-  arrayListInitizalizers();
-  accountant = 0;
-  iconPosition = new PVector(32, 32);
-  iconSize = new PVector(32, 32);
-  smooth();
-  sonido = true;
-  createBox2DWorld(box2d);
-
-  estado = Estado.menuPrincipal;
-  dibujaMenuPrincipal();
-  bodies = new ArrayList<SkeletonData>();
-  springRightHand = new Spring();
-  springLeftHand = new Spring();
-
-  camara = loadImage("camara.png");
-  nocamara = loadImage("nocamara.png");
-  altavoz = loadImage("altavoz.png");
-  noaltavoz = loadImage("noaltavoz.png");
-  sc = new SoundCipher(this);
-
-  leftHandBox = new HandBox(width / 2, height / 2 - 50, 20, 20, BodyType.DYNAMIC);
-  leftHandBox.teleport(box2d.coordPixelsToWorld(width / 2, height / 2 - 50));
-  springLeftHand.bind(width / 2, height / 2 - 50, leftHandBox);
-
-  rightHandBox = new HandBox(width / 2, height / 2 - 50, 20, 20, BodyType.DYNAMIC);
-  rightHandBox.teleport(box2d.coordPixelsToWorld(width / 2, height / 2 - 50));
-  springRightHand.bind(width / 2, height / 2 - 50, rightHandBox);
-}
-void compruebaFinDeJuego(){
-  int[] estadoFinal = estadoFinal.toArray();
-  int[] ultimaTorre = tower[2].toArray();
-}
-void draw() {
-  background(255);
-  if (cam)image(kinect.GetImage(), 0, 0, width, height);
-  if (cp5.getController("Volumen") != null)
-  volumen = cp5.getController("Volumen").getValue()*127/100;
-  for (int i=0; i<bodies.size (); i++)
-    drawSkeleton(bodies.get(i));
-
-  if (estado == Estado.juego) {
-    if (cam)image(camara, iconPosition.x, iconPosition.y, iconSize.x, iconSize.y);
-    else image(nocamara, iconPosition.x, iconPosition.y, iconSize.x, iconSize.y);
-    if (sonido)image(altavoz, width-2*iconPosition.x, iconPosition.y, iconSize.x, iconSize.y);
-    else image(noaltavoz, width-2*iconPosition.x, iconPosition.y, iconSize.x, iconSize.y);
-    compruebaFinDeJuego();
-    theDynamicMaker();
-    theStaticMaker();
-    accountant++;
-    box2d.step();    
-    
-    if (rightHandPos != null) {
-      springRightHand.update(rightHandPos.x, rightHandPos.y);
-    }
-
-    if (leftHandPos != null) {
-      springLeftHand.update(leftHandPos.x, leftHandPos.y);
-    }
-
-    displayBases();
-    rightHandBox.display();
-    leftHandBox.display();
-    displayGameObjects();
-  }
-}
-
-void createPieces(int nPieces) {
-  for (int i = 0; i < nPieces; i++) {
-    PieceDTO pieceDTO = fillPieceDTO(nPieces, i);
-    Piece newPiece = new Piece(pieceDTO.x, pieceDTO.y, pieceDTO.w, pieceDTO.h, pieceDTO.id, pieceDTO.bodyType, pieceDTO.tone);
-    pieceCollection.add(newPiece);
-  }
-}
-
-void mouseClicked() {
-  if (boundingBoxAltavoz()) {
-    sonido = !sonido;
-  }
-  if (boundingBoxCamara()) {
-    cam = !cam;
-  }
-}
-
-boolean boundingBoxAltavoz() {
-  if (mouseX > (width-2*iconPosition.x) && mouseX < (width-2*iconPosition.x)+iconSize.x) {
-    if ((mouseY > iconPosition.y) && mouseY < (iconPosition.y + iconSize.y)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-boolean boundingBoxCamara() {
-  if (mouseX > iconPosition.x && mouseX < iconPosition.x+iconSize.x) {
-    if (mouseY >iconPosition.y  && mouseY < iconPosition.y+iconSize.y) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void beginContact(Contact con) {
   Fixture f1 = con.getFixtureA();
   Fixture f2 = con.getFixtureB();
@@ -120,7 +12,7 @@ void beginContact(Contact con) {
 
   if (o1 == null ||o2 == null || o1.getClass() == HandBox.class || o2.getClass() == HandBox.class) { 
     if (sonido) {
-      sc.playNote(5, max(volumen - 10,1.0), 0.1);
+      sc.playNote(5, max(volumen - 10, 1.0), 0.1);
     } 
     return;
   }; 
@@ -158,17 +50,19 @@ void beginContact(Contact con) {
       b = (Box)o2;
       p = (Piece)o1;
     }
-    if (freeId != -1 && sonido) sc.playNote((10 + p.getId())*6, max(volumen-5,2), 0.2);
-    if (freeId == p.getId() && torres[b.getId()].isEmpty() && sonido) {
-      sc.playNote((10 + p.getId())*5, volumen, 0.2);
-      println(p.getId() + " toca un bloque " );
+    if (freeId != -1 && sonido) sc.playNote((10 + p.getId())*6, max(volumen-5, 2), 0.2);
+    if (freeId == p.getId() && torres[b.getId()].isEmpty()) {
+      if (p.getBody().getPosition().x > b.getBody().getPosition().x && (p.getBody().getPosition().x + p.getWeight()) < (b.getBody().getPosition().x + b.getWeight())) {
+        //if(sonido) sc.playNote((10 + p.getId())*5, volumen, 0.2);
+        println(p.getId() + " toca un bloque " );
 
-      torres[b.getId()].push(p.getId());
-      freeId = -1;
-      towerHeadsDynamic();
+        torres[b.getId()].push(p.getId());
+        freeId = -1;
+        towerHeadsDynamic();
+      }
     }
   } else if (sonido) {
-    sc.playNote((10), max(volumen-10,1), 0.2);
+    sc.playNote((10), max(volumen-10, 1), 0.2);
   };
 
   print("freeId = " + freeId + ";  towers = ");
@@ -195,7 +89,7 @@ void endContact(Contact con) {
 
     int tower = towerHead(p1.getId());
 
-    if (tower != -1 && freeId == -1 && p1.getBodyType() != BodyType.STATIC ) {
+    if (tower != -1 && freeId == -1 && p1.getBodyType() != BodyType.STATIC && (torres[tower].contains(p1.getId()) & torres[tower].contains(p2.getId()))) {
       println( p1.getId() + " se separa de " + p2.getId());
       int id = p1.getId() ;
       freeId = id;
@@ -209,7 +103,7 @@ void endContact(Contact con) {
       return;
     }
     tower = towerHead(p2.getId());
-    if (tower != -1 && freeId == -1 && p2.getBodyType() != BodyType.STATIC) {
+    if (tower != -1 && freeId == -1 && p2.getBodyType() != BodyType.STATIC && (torres[tower].contains(p1.getId()) & torres[tower].contains(p2.getId()))) {
       println( p2.getId() + " se separa de " + p1.getId());
       int id = p2.getId() ;
 
@@ -280,14 +174,77 @@ void makeArrayDynamic(int[] toDynamic) {
   }
 }
 
-void keyPressed() {
-  if (key == ' ') {
-    if (estado == Estado.juego) {
-      estado = Estado.pausa;
-      dibujaMenuPausa();
-    } else {
-      estado = Estado.juego;
-      borraMenuPausa();
+void theStaticMaker() {
+  if (staticCola.size() > 0) {
+    staticMaker.addAll(staticCola);
+    staticCola.clear();
+  }
+
+  if (staticMaker.size() > 0) {
+    for (Integer id : staticMaker) {
+      pieceCollection.get(id).makeStatic();
+    }
+    staticMaker.clear();
+  }
+}
+
+void theDynamicMaker() {
+  if (dynamicCola.size() > 0) { 
+    dynamicMaker.addAll(dynamicCola);
+    dynamicCola.clear();
+  }
+
+  if (dynamicMaker.size() > 0) {
+    for (Integer id : dynamicMaker) {
+      pieceCollection.get(id).makeDynamic();
     }
   }
+
+  dynamicMaker.clear();
+}
+
+void allStaticExcept(int[] nonStaticId) {
+  for (Piece p : pieceCollection) {
+    if (contains(nonStaticId, p.getId()) == -1 && !staticCola.contains(p.getId()) ) {
+      staticCola.add(p.getId());
+    }
+  }
+}
+
+void towerHeadsDynamic() {
+  for (ArrayDeque<Integer> n : torres) {
+    if (!n.isEmpty() && !dynamicCola.contains(n.peek()) ) {
+      dynamicCola.add(n.peek());
+    }
+  }
+}
+
+int contains(int[] array, int v) {
+  int cont = 0;
+  int result = -1;
+
+  for (int i : array) {
+    if (i == v) {
+      result = cont;
+      break;
+    }
+    cont++;
+  }
+
+  return result;
+}
+
+int towerHead(int v) {
+  int cont = 0;
+  int result = -1;
+
+  for (ArrayDeque<Integer> i : torres) {
+    if (!i.isEmpty() && i.peek() == v) {
+      result = cont;
+      break;
+    }
+    cont++;
+  }
+
+  return result;
 }

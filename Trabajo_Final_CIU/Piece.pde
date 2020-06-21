@@ -63,6 +63,10 @@ class Piece {
     return body;
   }
 
+  float getWeight(){
+    return w;
+  }
+
   void killBody() {
     box2d.destroyBody(body);
   }

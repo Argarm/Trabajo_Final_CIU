@@ -32,6 +32,7 @@ public void Sonido() {
   int sliderHeight = 200;
   if (cp5.getController("Volumen") != null)cp5.getController("Volumen").remove();
   else cp5.addSlider("Volumen", 0, 100, volumen, slidderX, slidderY, sliderWidth, sliderHeight);
+  victoria.amp(volumen/100);
 }
 
 public void Dificultad() {

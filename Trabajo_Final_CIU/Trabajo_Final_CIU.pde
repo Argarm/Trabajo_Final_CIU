@@ -1,6 +1,9 @@
 
 void setup() {
-  volumen = 64;
+  volumen = 50;
+  victoria = new SoundFile(this, "victoria.wav");
+  victoria.amp(volumen/100);
+  tiempo_progressbar = -1;
   box2d = new Box2DProcessing(this);
   size(640, 480);
   cp5 = new ControlP5(this);
@@ -24,6 +27,8 @@ void setup() {
   nocamara = loadImage("nocamara.png");
   altavoz = loadImage("altavoz.png");
   noaltavoz = loadImage("noaltavoz.png");
+  pausa = loadImage("pausa.png");
+  play = loadImage("play.png");
   sc = new SoundCipher(this);
 
   leftHandBox = new HandBox(width / 2, height / 2 - 50, 20, 20, BodyType.DYNAMIC);
@@ -33,6 +38,10 @@ void setup() {
   rightHandBox = new HandBox(width / 2, height / 2 - 50, 20, 20, BodyType.DYNAMIC);
   rightHandBox.teleport(box2d.coordPixelsToWorld(width / 2, height / 2 - 50));
   springRightHand.bind(width / 2, height / 2 - 50, rightHandBox);
+
+  leftHandBoxPosition = new PVector(leftHandBox.getBody().getPosition().x+10, leftHandBox.getBody().getPosition().y+10);
+  rightHandBoxPosition = new PVector(rightHandBox.getBody().getPosition().x+10, rightHandBox.getBody().getPosition().y+10);
+  d_progressbar = 30;
 }
 
 void compruebaFinDeJuego() {
@@ -40,6 +49,7 @@ void compruebaFinDeJuego() {
   Object[] ultimaTorre = torres[2].toArray();
   if (estadoFin.length == ultimaTorre.length) {
     estado = Estado.ganar;
+    victoria.play();
   }
 }
 
@@ -48,6 +58,7 @@ void draw() {
   if (cam)image(kinect.GetImage(), 0, 0, width, height);
   if (cp5.getController("Volumen") != null)
     volumen = cp5.getController("Volumen").getValue();
+    
   for (int i=0; i<bodies.size (); i++)
     drawSkeleton(bodies.get(i));
 
@@ -56,12 +67,13 @@ void draw() {
     else image(nocamara, iconPosition.x, iconPosition.y, iconSize.x, iconSize.y);
     if (sonido)image(altavoz, width-2*iconPosition.x, iconPosition.y, iconSize.x, iconSize.y);
     else image(noaltavoz, width-2*iconPosition.x, iconPosition.y, iconSize.x, iconSize.y);
+    image(pausa, width/2 - iconSize.x/2, iconPosition.y, iconSize.x, iconSize.y);
     compruebaFinDeJuego();
     theDynamicMaker();
     theStaticMaker();
     accountant++;
-    box2d.step();    
 
+    box2d.step();
     if (rightHandPos != null) {
       springRightHand.update(rightHandPos.x, rightHandPos.y);
     }
@@ -70,12 +82,150 @@ void draw() {
       springLeftHand.update(leftHandPos.x, leftHandPos.y);
     }
 
-    displayBases();
     rightHandBox.display();
     leftHandBox.display();
+
+    displayBases(); //<>//
     displayGameObjects();
+
+    if (boundingBoxAltavoz()) {
+      soundprogress++;
+      drawProgressBar(soundprogress, width-2*iconPosition.x, iconPosition.y);
+      if (soundprogress > 140) {
+        soundprogress = 0;
+        tiempo_progressbar = -1;
+        sonido = !sonido;
+      }
+    }
+
+    if (boundingBoxCamara()) {
+      camprogress++;
+      drawProgressBar(camprogress, iconPosition.x, iconPosition.y);
+      if (camprogress > 140) {
+        camprogress = 0;
+        tiempo_progressbar = -1;
+        cam = !cam;
+      }
+    }
+
+    if (boundingBoxPausa()) {
+      pausaprogress++;
+      drawProgressBar(pausaprogress, width/2 - iconSize.x/2, iconPosition.y);
+      if (pausaprogress > 140) {
+        pausaprogress = 0;
+        tiempo_progressbar = -1;
+        estado = Estado.pausa;
+        dibujaMenuPausa();
+      }
+    }
+    
   } else if (estado == Estado.ganar) {
-    text("GANASTE PUTO!", width/2, height/2);
+    textAlign(CENTER);
+    textSize(20);
+    text("HAS GANADO!", width/2, height/2-2*iconPosition.y);
+    image(play, width/2 - iconSize.x/2, height/2 - iconSize.y/2, iconSize.x, iconSize.y);
+    
+    box2d.step();
+    if (rightHandPos != null) {
+      springRightHand.update(rightHandPos.x, rightHandPos.y);
+    }
+
+    if (leftHandPos != null) {
+      springLeftHand.update(leftHandPos.x, leftHandPos.y);
+    }
+
+    rightHandBox.display();
+    leftHandBox.display();
+    
+    if (boundingBoxPlay()){
+      playprogress++;
+      drawProgressBar(playprogress,width/2- iconSize.x/2,height/2- iconSize.y/2);
+      if (playprogress > 140) {
+        playprogress = 0;
+        tiempo_progressbar = -1;
+        estado = Estado.menuPrincipal;
+        for (Piece piece : pieceCollection){
+          piece.killBody();
+        }
+        arrayListInitizalizers();
+        dibujaMenuPrincipal();
+      }
+    }
+  }
+}
+
+void drawProgressBar(float progress, float x, float y) {
+  ellipseMode(CENTER);
+  fill(#26221A);
+  ellipse(x+iconSize.x/2, y+iconSize.y/2, d_progressbar, d_progressbar);
+  fill(#1C2420);
+
+  showArcs(progress, x+iconSize.x/2, y+iconSize.y/2);
+
+  fill(255);
+}
+
+void showArcs(float progress, float x, float y) { 
+  fill(#B77C08);   
+  arc(x, y, d_progressbar, d_progressbar, PI+HALF_PI, map(progress, 0, 100, PI+HALF_PI, PI+HALF_PI+PI+HALF_PI));  
+
+  noFill();
+  arc(x, y, d_progressbar-20, d_progressbar-20, 0, TWO_PI);
+}
+
+void updateRightHandBoxsPositions() {
+  if (rightHandPos != null) {
+    x_progressbar = rightHandPos.x;
+    y_progressbar = rightHandPos.y;
+  }
+}
+
+void updateLeftHandBoxsPositions() {
+  if (leftHandPos != null) {
+    x_progressbar = leftHandPos.x;
+    y_progressbar = leftHandPos.y;
+  }
+}
+
+boolean boundingBoxAltavoz() {
+  updateRightHandBoxsPositions();
+  boolean rightHandX = x_progressbar > (width-2*iconPosition.x) && x_progressbar < (width-2*iconPosition.x)+iconSize.x;
+  boolean rightHandY = (y_progressbar > iconPosition.y) && y_progressbar < (iconPosition.y + iconSize.y);
+  return (rightHandX && rightHandY);
+
+}
+
+boolean boundingBoxCamara() {
+  updateLeftHandBoxsPositions();
+  boolean leftHandX = x_progressbar > iconPosition.x && x_progressbar < iconPosition.x+iconSize.x;
+  boolean leftHandY = y_progressbar >iconPosition.y  && y_progressbar < iconPosition.y+iconSize.y;
+  return (leftHandX && leftHandY);
+}
+
+boolean boundingBoxPausa() {
+  updateLeftHandBoxsPositions();
+  boolean leftHandX = x_progressbar > width/2 - iconSize.x/2 && x_progressbar < (width/2 - iconSize.x/2 +iconSize.x);
+  boolean leftHandY = y_progressbar >iconPosition.y  && y_progressbar < iconPosition.y+iconSize.y;
+  updateRightHandBoxsPositions();
+  boolean rightHandX = x_progressbar > width/2 - iconSize.x/2 && x_progressbar < (width/2 - iconSize.x/2 +iconSize.x);
+  boolean rightHandY = (y_progressbar > iconPosition.y) && y_progressbar < (iconPosition.y + iconSize.y);
+  return ((leftHandX && leftHandY) || (rightHandX && rightHandY));
+}
+
+boolean boundingBoxPlay(){
+  updateLeftHandBoxsPositions();
+  boolean leftHandX = x_progressbar > width/2 - iconSize.x/2 && x_progressbar < (width/2 - iconSize.x/2 +iconSize.x);
+  boolean leftHandY = y_progressbar > height/2 - iconSize.y/2 && y_progressbar < (height/2 - iconSize.y/2 +iconSize.y);
+  updateRightHandBoxsPositions();
+  boolean rightHandX = x_progressbar > width/2 - iconSize.x/2 && x_progressbar < (width/2 - iconSize.x/2 +iconSize.x);
+  boolean rightHandY = y_progressbar > height/2 - iconSize.y/2 && y_progressbar < (height/2 - iconSize.y/2 +iconSize.y);
+  return ((leftHandX && leftHandY) || (rightHandX && rightHandY));
+}
+
+void keyPressed() {
+  if (key == ' ' && estado == Estado.juego) {
+    estado = Estado.pausa;
+    dibujaMenuPausa();
   }
 }
 
@@ -87,209 +237,5 @@ void mouseClicked() {
     }
     arrayListInitizalizers();
     dibujaMenuPrincipal();
-  }
-  if (boundingBoxAltavoz()) {
-    sonido = !sonido;
-  }
-  if (boundingBoxCamara()) {
-    cam = !cam;
-  }
-}
-
-boolean boundingBoxAltavoz() {
-  if (mouseX > (width-2*iconPosition.x) && mouseX < (width-2*iconPosition.x)+iconSize.x) {
-    if ((mouseY > iconPosition.y) && mouseY < (iconPosition.y + iconSize.y)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-boolean boundingBoxCamara() {
-  if (mouseX > iconPosition.x && mouseX < iconPosition.x+iconSize.x) {
-    if (mouseY >iconPosition.y  && mouseY < iconPosition.y+iconSize.y) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void beginContact(Contact con) {
-  Fixture f1 = con.getFixtureA();
-  Fixture f2 = con.getFixtureB();
-
-  Body b1 = f1.getBody();
-  Body b2 = f2.getBody();
-
-  Object o1 = b1.getUserData();
-  Object o2 = b2.getUserData();
-
-
-  if (o1 == null ||o2 == null || o1.getClass() == HandBox.class || o2.getClass() == HandBox.class) { 
-    if (sonido) {
-      sc.playNote(5, max(volumen - 10, 1.0), 0.1);
-    } 
-    return;
-  }; 
-
-
-  if (o1.getClass() == Piece.class &&
-    o2.getClass() == Piece.class) {
-    Piece p1 = (Piece)o1;
-    Piece p2 = (Piece)o2;
-    if (freeId != -1 && sonido) sc.playNote((10 + p1.getId())*5, volumen, 0.2);
-    if (p1.getBody().getPosition().y > p2.getBody().getPosition().y  && freeId == p1.getId() && -1 != towerHead(p2.getId()) && p1.getId() > p2.getId() ) {
-
-      println(p1.getId() + " toca a " + p2.getId() );
-      int tower = towerHead(p2.getId());
-
-      torres[tower].push(p1.getId());
-      freeId = -1;
-      towerHeadsDynamic();
-    } else if (freeId == p2.getId() && -1 != towerHead(p1.getId()) && p2.getId() > p1.getId() ) {
-
-      println(p2.getId() + " toca a " + p1.getId() );
-      int tower = towerHead(p1.getId());
-      torres[tower].push(p2.getId());
-      freeId = -1;
-
-      towerHeadsDynamic();
-    }
-  } else if (o1.getClass() == Box.class || o2.getClass() == Box.class ) {
-    Box b;
-    Piece p;
-    if (o1.getClass() == Box.class) {
-      b = (Box)o1;
-      p = (Piece)o2;
-    } else {
-      b = (Box)o2;
-      p = (Piece)o1;
-    }
-    if (freeId != -1 && sonido) sc.playNote((10 + p.getId())*6, max(volumen-5, 2), 0.2);
-    if (freeId == p.getId() && torres[b.getId()].isEmpty() && sonido) {
-      sc.playNote((10 + p.getId())*5, volumen, 0.2);
-      println(p.getId() + " toca un bloque " );
-
-      torres[b.getId()].push(p.getId());
-      freeId = -1;
-      towerHeadsDynamic();
-    }
-  } else if (sonido) {
-    sc.playNote((10), max(volumen-10, 1), 0.2);
-  };
-
-  print("freeId = " + freeId + ";  towers = ");
-  for (int i = 0; i < torres.length; i++) {
-    println(torres[i]);
-  }
-}
-
-void endContact(Contact con) {
-  Fixture f1 = con.getFixtureA();
-  Fixture f2 = con.getFixtureB();
-
-  Body b1 = f1.getBody();
-  Body b2 = f2.getBody();
-
-  Object o1 = b1.getUserData();
-  Object o2 = b2.getUserData();
-  if (o1 == null ||o2 == null || o1.getClass() == HandBox.class || o2.getClass() == HandBox.class) return ; 
-
-  if (o1.getClass() == Piece.class &&
-    o2.getClass() == Piece.class) { 
-    Piece p1 = (Piece)o1;
-    Piece p2 = (Piece)o2;
-
-    int tower = towerHead(p1.getId());
-
-    if (tower != -1 && freeId == -1 && p1.getBodyType() != BodyType.STATIC ) {
-      println( p1.getId() + " se separa de " + p2.getId());
-      int id = p1.getId() ;
-      freeId = id;
-
-      torres[tower].pop();
-      if (torres[tower].peek() == p2.getId()) {
-        freeId = id;
-        allStaticExcept(new int[] {id});
-      } else
-        torres[tower].push(id);
-      return;
-    }
-    tower = towerHead(p2.getId());
-    if (tower != -1 && freeId == -1 && p2.getBodyType() != BodyType.STATIC) {
-      println( p2.getId() + " se separa de " + p1.getId());
-      int id = p2.getId() ;
-
-      torres[tower].pop();
-      if (torres[tower].peek() == p1.getId()) {
-        freeId = id;
-        allStaticExcept(new int[] {id});
-      } else
-        torres[tower].push(id);
-      return;
-    }
-  } else if (o1.getClass() == Box.class || o2.getClass() == Box.class ) {
-    Box b;
-    Piece p;
-    if (o1.getClass() == Box.class) {
-      b = (Box)o1;
-      p = (Piece)o2;
-    } else {
-      b = (Box)o2;
-      p = (Piece)o1;
-    }
-
-    if (-1 != towerHead(p.getId()) && freeId == -1 && p.getBodyType() != BodyType.STATIC) {
-      println( p.getId() + " se separa de un bloque" );
-      int id = p.getId();
-      freeId = id;
-      if (!torres[towerHead(p.getId())].isEmpty())torres[towerHead(p.getId())].pop();
-      allStaticExcept(new int[] {id});
-    }
-  }
-  print("freeId = " + freeId + ";  towers = ");
-  for (int i = 0; i < torres.length; i++) {
-    println(torres[i]);
-  }
-}
-
-void pieceToBoxController(Object o1, Object o2) {
-  Box b;
-  Piece p;
-  if (o1.getClass() == Box.class) {
-    b = (Box)o1;
-    p = (Piece)o2;
-  } else {
-    b = (Box)o2;
-    p = (Piece)o1;
-  }
-}
-
-void pieceToPieceReleaser(Object o1, Object o2) {
-  Piece p1 = (Piece)o1;
-  Piece p2 = (Piece)o2;
-
-  if (p1.getBody().getPosition().y > p2.getBody().getPosition().y && p1.getBodyType() != BodyType.DYNAMIC ) {
-
-    dynamicMaker.add(p2.getId());
-  } else if (p2.getBodyType() != BodyType.DYNAMIC) {
-    dynamicMaker.add(p1.getId());
-  }
-}
-
-void makeArrayDynamic(int[] toDynamic) {
-  for (int n : toDynamic) {
-
-    if (n != -1 && !dynamicCola.contains(n) ) {
-
-      dynamicCola.add(n);
-    }
-  }
-}
-
-void keyPressed() {
-  if (key == ' ' && estado == Estado.juego) {
-    estado = Estado.pausa;
-    dibujaMenuPausa();
   }
 }

@@ -11,6 +11,7 @@ import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.*;
 import org.jbox2d.dynamics.joints.*;
 import shiffman.box2d.*;
+import processing.sound.*;
 
 
 ArrayDeque<Integer>[] torres;
@@ -29,7 +30,8 @@ static Box2DProcessing box2d;
 color myColor;
 ControlP5 cp5;
 
-float volumen;
+float volumen, x_progressbar, y_progressbar, d_progressbar; 
+float soundprogress = 0,camprogress = 0, pausaprogress = 0, playprogress = 0;
 
 enum Estado {
   menuPrincipal, 
@@ -49,9 +51,12 @@ int[] towerLastId;
 
 Kinect kinect;
 
-PImage altavoz, noaltavoz, camara, nocamara;
+long tiempo_progressbar;
+
+PImage altavoz, noaltavoz, camara, nocamara, pausa,play;
 Point leftHandPos, rightHandPos;
-PVector iconPosition, iconSize;
+PVector iconPosition, iconSize, leftHandBoxPosition, rightHandBoxPosition;
 
 SoundCipher sc;
+SoundFile victoria;
 Spring springRightHand, springLeftHand;

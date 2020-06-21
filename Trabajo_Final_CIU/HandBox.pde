@@ -28,6 +28,10 @@ class HandBox {
   void killBody() {
     box2d.destroyBody(body);
   }
+
+  Body getBody(){
+    return body;
+  }
   
   void updatePosition(int mousex, int mousey){
     Vec2 speed = box2d.coordPixelsToWorld(mousex,mousey).sub(body.getPosition());

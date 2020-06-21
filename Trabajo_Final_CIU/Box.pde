@@ -40,6 +40,15 @@ class Box {
   void killBody() {
     box2d.destroyBody(body);
   }
+
+  Body getBody(){
+    return body;
+  }
+
+  float getWeight(){
+    return w;
+  }
+
   
   void teleport(Vec2 nPos){
     body.setTransform(nPos,body.getAngle());

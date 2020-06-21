@@ -1,13 +1,12 @@
 # To do list
 ## Importante:
-- Final de partida
-- Reiniciar partida
+- Final de partida (Mejorar pantalla de victoria)
 - Clipear pieza a los handbox
 - Buscar errores
 ## Opcionales:
 - Mejorar estetica
 - Shader (+nota)
-- Uso de menus con kinect
+- Interaccion menus con kinect
 ## Otros:
 - README
 - Memoria
