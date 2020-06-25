@@ -47,7 +47,7 @@ HandBox leftHandBox, rightHandBox;
 
 int accountant, buttonYSeparator, freeId, posXButton, posYButtonOffset, tamXButton, tamYButton;
 int dificultad = 1;
-int numberOfPieces = 1;
+int numberOfPieces = 4;
 int[] towerLastId;
 
 Kinect kinect;
