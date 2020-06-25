@@ -1,4 +1,4 @@
-class PieceDTO{
+class PieceDTO {
   private float x;
   private float y;
   private float w;

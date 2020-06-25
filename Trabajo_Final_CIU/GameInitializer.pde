@@ -7,6 +7,7 @@ void arrayListInitizalizers() {
   pieceCollection = new ArrayList<Piece>();
   boxes = new ArrayList<Box>();
   boundaries = new ArrayList();
+
 }
 
 void createBox2DWorld() {
@@ -16,9 +17,9 @@ void createBox2DWorld() {
 }
 
 void createBases() {
-  leftBase = new Box(width/6, height - height/5, width/4, height/30, BodyType.STATIC, 0);
-  centerBase = new Box(width/6 * 3, height - height/5, width/4, height/30, BodyType.STATIC, 1);
-  rightBase = new Box(width/6 * 5, height - height/5, width/4, height/30, BodyType.STATIC, 2);
+  leftBase = new Box(width/6, height - height/5, width/4 + 20, height/30, BodyType.STATIC, 0);
+  centerBase = new Box(width/6 * 3, height - height/5, width/4 +20 , height/30, BodyType.STATIC, 1);
+  rightBase = new Box(width/6 * 5, height - height/5, width/4 + 20, height/30, BodyType.STATIC, 2);
 }
 
 void createPieces(int nPieces) {

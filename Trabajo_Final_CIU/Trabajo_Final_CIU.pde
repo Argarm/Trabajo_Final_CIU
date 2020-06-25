@@ -5,6 +5,7 @@ void setup() {
   victoria.amp(volumen/100);
   tiempo_progressbar = -1;
   box2d = new Box2DProcessing(this);
+  //size(1280, 960);
   size(640, 480);
   cp5 = new ControlP5(this);
   kinect = new Kinect(this);
@@ -31,7 +32,7 @@ void setup() {
   play = loadImage("play.png");
   sc = new SoundCipher(this);
 
-  leftHandBox = new HandBox(width / 2, height / 2 - 50, 20, 20, BodyType.DYNAMIC);
+  leftHandBox = new HandBox(width / 2, height / 2 - 50, 40, 40, BodyType.DYNAMIC);
   leftHandBox.teleport(box2d.coordPixelsToWorld(width / 2, height / 2 - 50));
   springLeftHand.bind(width / 2, height / 2 - 50, leftHandBox);
 
@@ -54,7 +55,7 @@ void compruebaFinDeJuego() {
 }
 
 void draw() {
-  background(255);
+  background(200);
   if (cam)image(kinect.GetImage(), 0, 0, width, height);
   if (cp5.getController("Volumen") != null)
     volumen = cp5.getController("Volumen").getValue();
@@ -96,6 +97,8 @@ void draw() {
         tiempo_progressbar = -1;
         sonido = !sonido;
       }
+    }else if(soundprogress > 0){
+      soundprogress = 0;
     }
 
     if (boundingBoxCamara()) {
@@ -106,6 +109,8 @@ void draw() {
         tiempo_progressbar = -1;
         cam = !cam;
       }
+    }else if(camprogress > 0){
+      camprogress = 0;
     }
 
     if (boundingBoxPausa()) {
@@ -117,12 +122,17 @@ void draw() {
         estado = Estado.pausa;
         dibujaMenuPausa();
       }
+    }else if(pausaprogress > 0){
+      pausaprogress = 0;
     }
     
   } else if (estado == Estado.ganar) {
     textAlign(CENTER);
-    textSize(20);
-    text("HAS GANADO!", width/2, height/2-2*iconPosition.y);
+    textSize(50);
+    fill(10,210,30);
+    ellipse( width/2 - 5, height/2-2*iconPosition.y + 63,50,50);
+    fill(10,210,30);
+    text("¡HAS GANADO!", width/2, height/2-2*iconPosition.y);
     image(play, width/2 - iconSize.x/2, height/2 - iconSize.y/2, iconSize.x, iconSize.y);
     
     box2d.step();
@@ -147,9 +157,16 @@ void draw() {
         for (Piece piece : pieceCollection){
           piece.killBody();
         }
+
         arrayListInitizalizers();
         dibujaMenuPrincipal();
       }
+    }
+    if(!pieceCollection.isEmpty()){
+      for (Piece piece : pieceCollection){
+        piece.killBody();
+      }
+      arrayListInitizalizers();
     }
   }
 }

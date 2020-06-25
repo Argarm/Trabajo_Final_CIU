@@ -5,7 +5,7 @@ class Spring {
   Spring() {    
     mouseJoint = null;
   }
-
+  
   void update(float x, float y) {
     if (mouseJoint != null) {
       Vec2 mouseWorld = box2d.coordPixelsToWorld(x, y);

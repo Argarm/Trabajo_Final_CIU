@@ -47,7 +47,7 @@ Point getRectangle(SkeletonData _s, int _j1, int _j2) {
     h = wristY - handY;
   }
 
-  return new Point((int)(x + w/2), (int)(y + h/2));
+  return new Point((int)(x + w/2),(int)(y + h/2));
 }
 
 void appearEvent(SkeletonData _s) {

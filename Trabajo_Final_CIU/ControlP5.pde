@@ -31,7 +31,7 @@ public void Sonido() {
   int sliderWidth = 30;
   int sliderHeight = 200;
   if (cp5.getController("Volumen") != null)cp5.getController("Volumen").remove();
-  else cp5.addSlider("Volumen", 0, 100, volumen, slidderX, slidderY, sliderWidth, sliderHeight);
+  else cp5.addSlider("Volumen", 0, 100, volumen, slidderX, slidderY, sliderWidth, sliderHeight).setFont(p5Font);
   victoria.amp(volumen/100);
 }
 
@@ -92,15 +92,18 @@ void dibujaMenuPrincipal() {
   }
   cp5.addButton("Comenzar")
     .setPosition(posXButton, posYButtonOffset)
-    .setSize(tamXButton, tamYButton);
+    .setSize(tamXButton, tamYButton)
+    .setFont(p5Font);
 
   cp5.addButton("Opciones")
     .setPosition(posXButton, posYButtonOffset+buttonYSeparator+tamYButton)
-    .setSize(tamXButton, tamYButton);
+    .setSize(tamXButton, tamYButton)
+    .setFont(p5Font);
 
   cp5.addButton("Salir")
     .setPosition(posXButton, posYButtonOffset+2*(buttonYSeparator+tamYButton))
-    .setSize(tamXButton, tamYButton);
+    .setSize(tamXButton, tamYButton)
+    .setFont(p5Font);
 }
 
 void borraMenuOpciones() {
@@ -122,20 +125,33 @@ void dibujaMenuOpciones() {
   int posYButtonOffsetOpciones = height/4;
   cp5.addButton("Sonido")
     .setPosition(posXButton, posYButtonOffsetOpciones)
-    .setSize(tamXButton, tamYButton);
-
+    .setSize(tamXButton, tamYButton)
+    .setFont(p5Font);
+  String message ="";
+  switch (numberOfPieces){
+    case(3): message = "Dificultad - Facil"; break;
+    case(4): message = "Dificultad - Media"; break;
+    case(6): message = "Dificultad - Dificil"; break;
+  }
   cp5.addButton("Dificultad")
-    .setLabel("Dificultad - Media")
+    .setLabel(message)
     .setPosition(posXButton, posYButtonOffsetOpciones+buttonYSeparator+tamYButton)
-    .setSize(tamXButton, tamYButton);   
-
+    .setSize(tamXButton, tamYButton)
+    .setFont(p5Font);   
+  if(cam){
+    myColor = color(0, 150, 0); 
+  }else{
+    myColor = color(150,0, 0);
+  }
   cp5.addButton("Camara").setColorBackground(myColor)
     .setPosition(posXButton, posYButtonOffsetOpciones+2*(buttonYSeparator+tamYButton))
-    .setSize(tamXButton, tamYButton);
+    .setSize(tamXButton, tamYButton)
+    .setFont(p5Font);
 
   cp5.addButton("Atras")
     .setPosition(posXButton, posYButtonOffsetOpciones+3*(buttonYSeparator+tamYButton))
-    .setSize(tamXButton, tamYButton);
+    .setSize(tamXButton, tamYButton)
+    .setFont(p5Font);
 }
 
 void borraMenuPrincipal() {
@@ -147,13 +163,16 @@ void borraMenuPrincipal() {
 void dibujaMenuPausa() {
   cp5.addButton("Reanudar")
     .setPosition(posXButton, posYButtonOffset)
-    .setSize(tamXButton, tamYButton);
+    .setSize(tamXButton, tamYButton)
+    .setFont(p5Font);
   cp5.addButton("Inicio")
     .setPosition(posXButton, posYButtonOffset+1*(buttonYSeparator+tamYButton))
-    .setSize(tamXButton, tamYButton);
+    .setSize(tamXButton, tamYButton)
+    .setFont(p5Font);
   cp5.addButton("Salir")
     .setPosition(posXButton, posYButtonOffset+2*(buttonYSeparator+tamYButton))
-    .setSize(tamXButton, tamYButton);
+    .setSize(tamXButton, tamYButton)
+    .setFont(p5Font);
 }
 
 void borraMenuPausa() {
@@ -170,4 +189,5 @@ void buttonParametersInitializers() {
   buttonYSeparator = 3*(tamYButton/4);
   myColor = color(0, 150, 0);
   cam = true;
+  p5Font = new ControlFont(createFont("Arial",25));
 }

@@ -9,8 +9,9 @@ class Boundary {
     this.w = w;
     this.h = h;
     PolygonShape polygonShape = ShapeUtils.definePolygonAsBox(w, h);
+    FixtureDef fixture  = ShapeUtils.fixtureDefinition(polygonShape,true);
     BodyDef bodyDefinition = ShapeUtils.createBodyDefinition(x,y,angle);
-    body = ShapeUtils.createBody(bodyDefinition, polygonShape, this);
+    body = ShapeUtils.createBody(bodyDefinition, fixture, this);
     
   }
   

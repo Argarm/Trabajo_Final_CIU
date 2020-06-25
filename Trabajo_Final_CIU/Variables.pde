@@ -28,6 +28,7 @@ Box leftBase, centerBase, rightBase;
 static Box2DProcessing box2d;
 
 color myColor;
+ControlFont p5Font;
 ControlP5 cp5;
 
 float volumen, x_progressbar, y_progressbar, d_progressbar; 

@@ -37,12 +37,13 @@ static class ShapeUtils {
         return polygonShape;
   }
   
-  private static FixtureDef fixtureDefinition(PolygonShape polygonShape){
+  private static FixtureDef fixtureDefinition(PolygonShape polygonShape,boolean special){
     FixtureDef fixture = new FixtureDef();
     fixture.shape = polygonShape;
     fixture.density = 1;
     fixture.friction = 0.3;
     fixture.restitution = 0.5;
+    if(special) fixture.filter.groupIndex = -1;
     return fixture;
   }
 }

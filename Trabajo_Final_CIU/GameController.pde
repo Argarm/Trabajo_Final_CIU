@@ -23,7 +23,8 @@ void beginContact(Contact con) {
     Piece p1 = (Piece)o1;
     Piece p2 = (Piece)o2;
     if (freeId != -1 && sonido) sc.playNote((10 + p1.getId())*5, volumen, 0.2);
-    if (p1.getBody().getPosition().y > p2.getBody().getPosition().y  && freeId == p1.getId() && -1 != towerHead(p2.getId()) && p1.getId() > p2.getId() ) {
+    //if (p1.getBody().getPosition().y > p2.getBody().getPosition().y  && freeId == p1.getId() && -1 != towerHead(p2.getId()) && p1.getId() > p2.getId() ) {
+      if (p1.getBody().getPosition().y > p2.getBody().getPosition().y  && freeId == p1.getId() && -1 != towerHead(p2.getId()) && p1.getId() > p2.getId() ) {
 
       println(p1.getId() + " toca a " + p2.getId() );
       int tower = towerHead(p2.getId());
@@ -52,14 +53,14 @@ void beginContact(Contact con) {
     }
     if (freeId != -1 && sonido) sc.playNote((10 + p.getId())*6, max(volumen-5, 2), 0.2);
     if (freeId == p.getId() && torres[b.getId()].isEmpty()) {
-      if (p.getBody().getPosition().x > b.getBody().getPosition().x && (p.getBody().getPosition().x + p.getWeight()) < (b.getBody().getPosition().x + b.getWeight())) {
+      //if (p.getBody().getPosition().x > b.getBody().getPosition().x && (p.getBody().getPosition().x + p.getWeight()) < (b.getBody().getPosition().x + b.getWeight())) {
         //if(sonido) sc.playNote((10 + p.getId())*5, volumen, 0.2);
         println(p.getId() + " toca un bloque " );
 
         torres[b.getId()].push(p.getId());
         freeId = -1;
         towerHeadsDynamic();
-      }
+      //}
     }
   } else if (sonido) {
     sc.playNote((10), max(volumen-10, 1), 0.2);
